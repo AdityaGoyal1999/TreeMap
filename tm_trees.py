@@ -152,8 +152,8 @@ class TMTree:
         if self.data_size == 0:
             pass
         # I am missing some case
-        elif len(self._parent_tree._subtrees) == 1:
-            self.rect = rect
+        # elif len(self._parent_tree._subtrees) == 1:
+        #     self.rect = rect
         else:
             x, y, width, height = rect
             if width > height:
@@ -200,7 +200,19 @@ class TMTree:
         to fill it with.
         """
         # TODO: (Task 2) Complete the body of this method.
-        
+        #
+        # What are we supposed to do when there is no tuple
+        #
+        #
+        if self.is_empty():
+            return []
+        elif len(self._subtrees) == 0:
+            return [(self.rect, self._colour)]
+        else:
+            output = []
+            for subtree in self._subtrees:
+                output.extend(subtree.get_rectangles())
+            return output
 
     def get_tree_at_position(self, pos: Tuple[int, int]) -> Optional[TMTree]:
         """Return the leaf in the displayed-tree rooted at this tree whose
@@ -328,4 +340,9 @@ if __name__ == '__main__':
     #         'python_ta', 'typing', 'math', 'random', 'os', '__future__'
     #     ]
     # })
-    f = FileSystemTree('/Users/adityagoyal/Documents/csc148/assignments')
+    # f = FileSystemTree('/Users/adityagoyal/Documents/csc148/assignments')
+    # f.update_rectangles((0, 0, 200, 100))
+    # print(f.get_rectangles())
+    #
+    # there can be an error in the update_rectangles as I have omitted the elif
+    # case
