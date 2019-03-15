@@ -20,7 +20,7 @@ to them.
 from typing import Optional, Tuple
 import pygame
 from tm_trees import TMTree, FileSystemTree
-from papers import PaperTree
+# from papers import PaperTree
 
 
 # Screen dimensions and coordinates
@@ -66,9 +66,9 @@ def render_display(screen: pygame.Surface, tree: Optional[TMTree],
     subscreen = screen.subsurface((0, 0, WIDTH, TREEMAP_HEIGHT))
 
     # TODO: Uncomment this afer you have completed Task 2
-    # for rect, colour in tree.get_rectangles():
+    for rect, colour in tree.get_rectangles():
         # Note that the arguments are in the opposite order
-        # pygame.draw.rect(subscreen, colour, rect)
+        pygame.draw.rect(subscreen, colour, rect)
 
     # add the hover rectangle
     if selected_node is not None:
@@ -77,7 +77,7 @@ def render_display(screen: pygame.Surface, tree: Optional[TMTree],
         pygame.draw.rect(subscreen, (255, 255, 255), hover_node.rect, 2)
 
     # TODO: Uncomment this after you have completed Task 2
-    # _render_text(screen, _get_display_text(selected_node))
+    _render_text(screen, _get_display_text(selected_node))
 
     # This must be called *after* all other pygame functions have run.
     pygame.display.flip()

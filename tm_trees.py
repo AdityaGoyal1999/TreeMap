@@ -156,6 +156,7 @@ class TMTree:
         #     self.rect = rect
         else:
             x, y, width, height = rect
+            self.rect = (x, y, width, height)
             if width > height:
                 # this is opposed to the index looping - this helps to check if
                 # the subtree is the last element in the subtree
@@ -223,6 +224,30 @@ class TMTree:
         tree represented by the rectangle that is closer to the origin.
         """
         # TODO: (Task 3) Complete the body of this method
+        a, b = pos
+        x, y, width, height = self.rect
+        if x <= a <= width and y <= b <= height:
+            return self._get_tmtree_in_range(pos)
+        else:
+            return None
+
+    def _get_tmtree_in_range(self, pos: Tuple[int, int]) -> Optional[TMTree]:
+        """ Recursively returns the leaf which is in the range.
+        """
+        if self.is_empty():
+            return None
+        elif len(self._subtrees) == 0:
+            x, y, width, height = self.rect
+            if x <= pos[0] <= width and y <= pos[1] <= height:
+                return self
+            else:
+                return None
+        else:
+            for subtree in self._subtrees:
+                val = subtree._get_tmtree_in_range(pos)
+                if val is not None:
+                    return val
+            return None
 
     def update_data_sizes(self) -> int:
         """Update the data_size for this tree and its subtrees, based on the
@@ -231,12 +256,25 @@ class TMTree:
         If this tree is a leaf, return its size unchanged.
         """
         # TODO: (Task 4) Complete the body of this method.
+        if self.is_empty():
+            return 0
+        elif len(self._subtrees) == 0:
+            return self.data_size
+        else:
+            size = 0
+            for subtree in self._subtrees:
+                val = subtree.update_data_sizes()
+                size += val
+                subtree.data_size += val
+            self.data_size = size
+            return size
 
     def move(self, destination: TMTree) -> None:
         """If this tree is a leaf, and <destination> is not a leaf, move this
         tree to be the last subtree of <destination>. Otherwise, do nothing.
         """
         # TODO: (Task 4) Complete the body of this method.
+        
 
     def change_size(self, factor: float) -> None:
         """Change the value of this tree's data_size attribute by <factor>.
@@ -340,9 +378,6 @@ if __name__ == '__main__':
     #         'python_ta', 'typing', 'math', 'random', 'os', '__future__'
     #     ]
     # })
-    # f = FileSystemTree('/Users/adityagoyal/Documents/csc148/assignments')
-    # f.update_rectangles((0, 0, 200, 100))
-    # print(f.get_rectangles())
-    #
-    # there can be an error in the update_rectangles as I have omitted the elif
-    # case
+    f = FileSystemTree('/Users/adityagoyal/Documents/csc148/assignments/a2/example-directory')
+    f.update_rectangles((0, 0, 100, 100))
+    print(len(f.get_rectangles()))
