@@ -21,6 +21,8 @@ import os
 import math
 from random import randint
 from typing import List, Tuple, Optional
+# remove this later on
+# from print_dirs import print_items
 
 
 class TMTree:
@@ -103,10 +105,11 @@ class TMTree:
         self._parent_tree = None
 
         # You will change this in Task 5
-        if len(self._subtrees) > 0:
-            self._expanded = True
-        else:
-            self._expanded = False
+        # if len(self._subtrees) > 0:
+        #     self._expanded = True
+        # else:
+        #     self._expanded = False
+        self._expanded = False
 
         # TODO: (Task 1) Complete this initializer by doing two things:
         # 1. Initialize self._colour and self.data_size, according to the
@@ -152,8 +155,9 @@ class TMTree:
         if self.data_size == 0:
             pass
         # I am missing some case
-        # elif len(self._parent_tree._subtrees) == 1:
-        #     self.rect = rect
+        elif self._parent_tree is not None and len(self._parent_tree._subtrees)\
+                == 1:
+            self.rect = rect
         else:
             x, y, width, height = rect
             self.rect = (x, y, width, height)
@@ -162,14 +166,14 @@ class TMTree:
                 # the subtree is the last element in the subtree
                 count = 0
                 # w1 is to keep the progress of the x value
-                w1 = 0
+                w1 = x
                 for subtree in self._subtrees:
                     if count == len(self._subtrees) - 1:
                         subtree.rect = (w1, y, width, height)
                         subtree.update_rectangles((w1, y, width, height))
                         count += 1
                     else:
-                        percentage = subtree.data_size / self.data_size * 100
+                        percentage = subtree.data_size / self.data_size
                         x = w1
                         w1 = percentage * width
                         w1 = math.floor(w1)
@@ -178,19 +182,19 @@ class TMTree:
                         count += 1
             else:   # width <= height
                 count = 0
-                w2 = 0
+                h1 = y
                 for subtree in self._subtrees:
                     if count == len(self._subtrees) - 1:
-                        subtree.rect = (x, w2, width, height)
-                        subtree.update_rectangles((x, w2, width, height))
+                        subtree.rect = (x, h1, width, height)
+                        subtree.update_rectangles((x, h1, width, height))
                         count += 1
                     else:
-                        percentage = subtree.data_size / self.data_size * 100
-                        y = w2
-                        w2 = percentage * height
-                        w2 = math.floor(w2)
-                        subtree.rect = (x, y, width, w2)
-                        subtree.update_rectangles((x, y, width, w2))
+                        percentage = subtree.data_size / self.data_size
+                        y = h1
+                        h1 = percentage * height
+                        h1 = math.floor(h1)
+                        subtree.rect = (x, y, width, h1)
+                        subtree.update_rectangles((x, y, width, h1))
                         count += 1
 
     def get_rectangles(self) -> List[Tuple[Tuple[int, int, int, int],
@@ -207,7 +211,7 @@ class TMTree:
         #
         if self.is_empty():
             return []
-        elif len(self._subtrees) == 0:
+        elif len(self._subtrees) == 0 or self._expanded is False:
             return [(self.rect, self._colour)]
         else:
             output = []
@@ -236,7 +240,7 @@ class TMTree:
         """
         if self.is_empty():
             return None
-        elif len(self._subtrees) == 0:
+        elif len(self._subtrees) == 0 or self._expanded is False:
             x, y, width, height = self.rect
             if x <= pos[0] <= width and y <= pos[1] <= height:
                 return self
@@ -274,7 +278,12 @@ class TMTree:
         tree to be the last subtree of <destination>. Otherwise, do nothing.
         """
         # TODO: (Task 4) Complete the body of this method.
-        
+        if len(self._subtrees) == 0 and len(destination._subtrees) > 0:
+            remove_subtree = self
+            destination._subtrees.append(remove_subtree)
+            self._parent_tree.remove(remove_subtree)
+        else:
+            pass
 
     def change_size(self, factor: float) -> None:
         """Change the value of this tree's data_size attribute by <factor>.
@@ -285,10 +294,97 @@ class TMTree:
         Do nothing if this tree is not a leaf.
         """
         # TODO: (Task 4) Complete the body of this method
+        val = factor * self.data_size
+        val = round(val)
+        val2 = self.data_size
+        if val + val2 < 1:
+            pass
+        else:
+            self.data_size += val
+            self._update_parent()
+
+    def expand_all(self) -> None:
+        """ Expands all the corresponding tree and subtrees when the user wants.
+        """
+        if self.is_empty():
+            pass
+        elif len(self._subtrees) == 0:
+            pass
+        else:
+            self._expanded = True
+            for subtree in self._subtrees:
+                subtree.expand_all()
+
+    def expand(self) -> None:
+        """ Expands the corresponding subtree as the user wants.
+        """
+        if self.is_empty():
+            pass
+        elif len(self._subtrees) == 0:
+            pass
+        else:
+            self._expanded = True
+
+    # collapse and collapse_all doesn't work properly
+    def collapse(self) -> None:
+        """ Collapses the corresponding tree.
+        """
+        if self.is_empty():
+            pass
+        elif len(self._subtrees) == 0:
+            pass
+        else:
+            self._expanded = False
+            for subtree in self._subtrees:
+                subtree._expanded = False
+
+    def collapse_all(self) -> None:
+        """ Collapses the tree selected by the user.
+        """
+        # could be problematic
+        if self.is_empty():
+            pass
+        else:
+            self._collapse_all_helper2()
+
+    def _collapse_all_helper2(self) -> Optional[TMTree]:
+        """ Collapses the whole corresponding tree.
+        """
+        if self.is_empty():
+            return None
+        elif self._parent_tree is None:
+            return self
+        else:
+            return self._parent_tree._collapse_all_helper2()
+
+    def _collapse_all_helper1(self, depth: int = 0):
+        """ Collapses all the rectangles.
+        """
+        if self.is_empty():
+            pass
+        else:
+            if depth == 0:
+                tree = self._collapse_all_helper2()
+            else:
+                tree = self
+            tree._expanded = False
+            for subtree in tree._subtrees:
+                subtree._collapse_all_helper1(depth+1)
+
 
     # TODO: (Task 5) Write the methods expand, expand_all, collapse, and
     # TODO: collapse_all, and add the displayed-tree functionality to the
     # TODO: methods from Tasks 2 and 3
+
+    def _update_parent(self) -> None:
+        """ Updates the values of the parent trees through recursion.
+        """
+        # this condition could be problematic
+        if self._parent_tree is None:
+            pass
+        else:
+            self._parent_tree.update_data_sizes()
+            self._parent_tree._parent_tree._update_parent()
 
     # Methods for the string representation
     def get_path_string(self, final_node: bool = True) -> str:
@@ -357,6 +453,14 @@ class FileSystemTree(TMTree):
                     subdirectories.append(a)
         TMTree.__init__(self, n, subdirectories, ds)
 
+    def _how_many_trees(self) -> None:
+        if self.is_empty():
+            pass
+        else:
+            print(self._name)
+            for subtree in self._subtrees:
+                subtree._how_many_trees()
+
     def get_separator(self) -> str:
         """Return the file separator for this OS.
         """
@@ -379,5 +483,9 @@ if __name__ == '__main__':
     #     ]
     # })
     f = FileSystemTree('/Users/adityagoyal/Documents/csc148/assignments/a2/example-directory')
-    f.update_rectangles((0, 0, 100, 100))
-    print(len(f.get_rectangles()))
+    f.update_rectangles((0, 0, 200, 100))
+    print(f.get_rectangles())
+    # print_items('/Users/adityagoyal/Documents/csc148/assignments', '')
+    # f._how_many_trees()
+    # print(f.get_path_string())
+    print(f.get_tree_at_position((90, 100))._name)

@@ -120,45 +120,45 @@ def event_loop(screen: pygame.Surface, tree: TMTree) -> None:
 
         elif event.type == pygame.KEYUP and selected_node is not None:
             if event.key == pygame.K_UP:
-                pass
+                # pass
                 # TODO: Uncomment once you have completed Task 4
-                # selected_node.change_size(0.01)
-                # tree.update_data_sizes()
-                # tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
+                selected_node.change_size(0.01)
+                tree.update_data_sizes()
+                tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
 
             elif event.key == pygame.K_DOWN:
-                pass
+                # pass
                 # TODO: Uncomment once you have completed Task 4
-                # selected_node.change_size(-0.01)
-                # tree.update_data_sizes()
-                # tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
+                selected_node.change_size(-0.01)
+                tree.update_data_sizes()
+                tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
 
             elif event.key == pygame.K_m:
-                pass
+                # pass
                 # TODO: Uncomment once you have completed Task 4
-                # selected_node.move(hover_node)
-                # tree.update_data_sizes()
-                # tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
+                selected_node.move(hover_node)
+                tree.update_data_sizes()
+                tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
 
             elif event.key == pygame.K_e:
-                pass
+                # pass
                 # TODO: Uncomment once you have completed Task 5
-                # selected_node.expand()
+                selected_node.expand()
 
             elif event.key == pygame.K_a:
-                pass
+                # pass
                 # TODO: Uncomment once you have completed Task 5
-                # selected_node.expand_all()
+                selected_node.expand_all()
 
             elif event.key == pygame.K_c:
-                pass
+                # pass
                 # TODO: Uncomment once you have completed Task 5
-                # selected_node.collapse()
+                selected_node.collapse()
 
             elif event.key == pygame.K_x:
-                pass
+                # pass
                 # TODO: Uncomment once you have completed Task 5
-                # selected_node.collapse_all()
+                selected_node.collapse_all()
 
         # Update display
         render_display(screen, tree, selected_node, hover_node)
@@ -172,7 +172,7 @@ def _handle_click(button: int, pos: Tuple[int, int], tree: TMTree,
     leaf is left-clicked again.
     """
     # TODO: Delete the line below after completing Task 3
-    return None
+    # return None
 
     # left mouse click
     if button == 1:
@@ -229,7 +229,7 @@ if __name__ == '__main__':
     # call, with the '' replaced by a path like
     # 'C:\\Users\\David\\Documents\\csc148\\assignments' (Windows) or
     # '/Users/dianeh/Documents/courses/csc148/assignments' (OSX)
-    run_treemap_file_system('/Users/adityagoyal/Documents/csc148/assignments')
+    run_treemap_file_system('/Users/adityagoyal/Documents/csc148/assignments/a2/example-directory')
 
     # To check your work for Task 6, try uncommenting the following
     # run_treemap_papers()

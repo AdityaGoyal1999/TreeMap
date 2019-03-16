@@ -33,4 +33,4 @@ if __name__ == '__main__':
     # 'C:\\Users\\David\\Documents\\csc148\\assignments' (Windows) or
     # '/Users/dianeh/Documents/courses/csc148/assignments' (OSX)
     # to print the contents of that folder.
-    print_items(INSERT_PATH_HERE, '')
+    print_items('Users/aditaygoyal/Documents/csc148/assignments', '')
