@@ -115,6 +115,11 @@ class TMTree:
         # 1. Initialize self._colour and self.data_size, according to the
         # docstring.
         # 2. Set this tree as the parent for each of its subtrees.
+
+        #
+        # if self.is_empty()
+        #
+
         self._colour = (randint(0, 255), randint(0, 255), randint(0, 255))
         if len(subtrees) == 0:
             self.data_size = data_size
@@ -448,9 +453,9 @@ class FileSystemTree(TMTree):
         else:
             subdirectories = []
             for subdirectory in os.listdir(path):
-                if subdirectory != '.DS_Store':
-                    a = FileSystemTree(os.path.join(path, subdirectory))
-                    subdirectories.append(a)
+                # if subdirectory != '.DS_Store':
+                a = FileSystemTree(os.path.join(path, subdirectory))
+                subdirectories.append(a)
         TMTree.__init__(self, n, subdirectories, ds)
 
     def _how_many_trees(self) -> None:
@@ -476,12 +481,14 @@ class FileSystemTree(TMTree):
 
 
 if __name__ == '__main__':
+
     # import python_ta
     # python_ta.check_all(config={
     #     'allowed-import-modules': [
     #         'python_ta', 'typing', 'math', 'random', 'os', '__future__'
     #     ]
     # })
+
     f = FileSystemTree('/Users/adityagoyal/Documents/csc148/assignments/a2/example-directory')
     f.update_rectangles((0, 0, 200, 100))
     print(f.get_rectangles())
