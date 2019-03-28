@@ -1,15 +1,12 @@
 """Assignment 2: Trees for Treemap
-
 === CSC148 Winter 2019 ===
 This code is provided solely for the personal and private use of
 students taking the CSC148 course at the University of Toronto.
 Copying for purposes other than this use is expressly prohibited.
 All forms of distribution of this code, whether as given or with
 any changes, are expressly prohibited.
-
 All of the files in this directory and all subdirectories are:
 Copyright (c) 2019 Bogdan Simion, David Liu, Diane Horton, Jacqueline Smith
-
 === Module Description ===
 This module contains the basic tree interface required by the treemap
 visualiser. You will both add to the abstract class, and complete a
@@ -28,23 +25,19 @@ from typing import List, Tuple, Optional
 class TMTree:
     """A TreeMappableTree: a tree that is compatible with the treemap
     visualiser.
-
     This is an abstract class that should not be instantiated directly.
-
     You may NOT add any attributes, public or private, to this class.
     However, part of this assignment will involve you implementing new public
     *methods* for this interface.
     You should not add any new public methods other than those required by
     the client code.
     You can, however, freely add private methods as needed.
-
     === Public Attributes ===
     rect:
         The pygame rectangle representing this node in the treemap
         visualization.
     data_size:
         The size of the data represented by this tree.
-
     === Private Attributes ===
     _colour:
         The RGB colour value of the root of this tree.
@@ -57,20 +50,15 @@ class TMTree:
         as a subtree, or None if this tree is not part of a larger tree.
     _expanded:
         Whether or not this tree is considered expanded for visualization.
-
     === Representation Invariants ===
     - data_size >= 0
     - If _subtrees is not empty, then data_size is equal to the sum of the
       data_size of each subtree.
-
     - _colour's elements are each in the range 0-255.
-
     - If _name is None, then _subtrees is empty, _parent_tree is None, and
       data_size is 0.
       This setting of attributes represents an empty tree.
-
     - if _parent_tree is not None, then self is in _parent_tree._subtrees
-
     - if _expanded is True, then _parent_tree._expanded is True
     - if _expanded is False, then _expanded is False for every tree
       in _subtrees
@@ -88,15 +76,11 @@ class TMTree:
     def __init__(self, name: str, subtrees: List[TMTree],
                  data_size: int = 0) -> None:
         """Initialize a new TMTree with a random colour and the provided <name>.
-
         If <subtrees> is empty, use <data_size> to initialize this tree's
         data_size.
-
         If <subtrees> is not empty, ignore the parameter <data_size>,
         and calculate this tree's data_size instead.
-
         Set this tree as the parent for each of its subtrees.
-
         Precondition: if <name> is None, then <subtrees> is empty.
         """
         self.rect = (0, 0, 0, 0)
@@ -159,7 +143,7 @@ class TMTree:
         # x, y, width, height = rect
         if self.data_size == 0:
             pass
-        # I am missing some case
+        # When self is a leaf, but not a root
         elif self._parent_tree is not None and len(self._parent_tree._subtrees)\
                 == 1:
             self.rect = rect
@@ -173,33 +157,36 @@ class TMTree:
                 # w1 is to keep the progress of the x value
                 w1 = x
                 for subtree in self._subtrees:
+                    # For the last subtree, the w1 value is correct, but we still
+                    # need to calculate the width because it does not represent
+                    # "rest of the space".
                     if count == len(self._subtrees) - 1:
-                        subtree.rect = (w1, y, width, height)
-                        subtree.update_rectangles((w1, y, width, height))
+                        subtree.rect = (x + w1, y, width - x - w1, height)
+                        subtree.update_rectangles(subtree.rect)
                         count += 1
                     else:
                         percentage = subtree.data_size / self.data_size
-                        x = w1
+                        x = x + w1
                         w1 = percentage * width
                         w1 = math.floor(w1)
                         subtree.rect = (x, y, w1, height)
-                        subtree.update_rectangles((x, y, w1, height))
+                        subtree.update_rectangles(subtree.rect)
                         count += 1
             else:   # width <= height
                 count = 0
                 h1 = y
                 for subtree in self._subtrees:
                     if count == len(self._subtrees) - 1:
-                        subtree.rect = (x, h1, width, height)
-                        subtree.update_rectangles((x, h1, width, height))
+                        subtree.rect = (x, y + h1, width, height - y - h1)
+                        subtree.update_rectangles(subtree.rect)
                         count += 1
                     else:
                         percentage = subtree.data_size / self.data_size
-                        y = h1
+                        y = y + h1
                         h1 = percentage * height
                         h1 = math.floor(h1)
                         subtree.rect = (x, y, width, h1)
-                        subtree.update_rectangles((x, y, width, h1))
+                        subtree.update_rectangles(subtree.rect)
                         count += 1
 
     def get_rectangles(self) -> List[Tuple[Tuple[int, int, int, int],
@@ -208,29 +195,30 @@ class TMTree:
         rooted at this tree. Each tuple consists of a tuple that defines the
         appropriate pygame rectangle to display for a leaf, and the colour
         to fill it with.
+        >>> f = FileSystemTree('/Users/16475/Desktop/csc148/assignments/a2/example-directory/workshop')
+        >>> f.get_rectangles()
         """
         # TODO: (Task 2) Complete the body of this method.
-        #
-        # What are we supposed to do when there is no tuple
-        #
-        #
+
         if self.is_empty():
             return []
+        # Unopened empty folder or file
         elif len(self._subtrees) == 0 or self._expanded is False:
             return [(self.rect, self._colour)]
         else:
             output = []
             for subtree in self._subtrees:
                 output.extend(subtree.get_rectangles())
+                #output.append((subtree.rect, subtree._colour))
             return output
 
     def get_tree_at_position(self, pos: Tuple[int, int]) -> Optional[TMTree]:
         """Return the leaf in the displayed-tree rooted at this tree whose
         rectangle contains position <pos>, or None if <pos> is outside of this
         tree's rectangle.
-
         If <pos> is on the shared edge between two rectangles, return the
-        tree represented by the rectangle that is closer to the origin.
+        tree represented on the left for a vertical boundary, or the rectangle
+        above for a horizontal boundary.
         """
         # TODO: (Task 3) Complete the body of this method
         a, b = pos
@@ -261,7 +249,6 @@ class TMTree:
     def update_data_sizes(self) -> int:
         """Update the data_size for this tree and its subtrees, based on the
         size of their leaves, and return the new size.
-
         If this tree is a leaf, return its size unchanged.
         """
         # TODO: (Task 4) Complete the body of this method.
@@ -292,10 +279,8 @@ class TMTree:
 
     def change_size(self, factor: float) -> None:
         """Change the value of this tree's data_size attribute by <factor>.
-
         Always round up the amount to change, so that it's an int, and
         some change is made.
-
         Do nothing if this tree is not a leaf.
         """
         # TODO: (Task 4) Complete the body of this method
@@ -424,20 +409,16 @@ class TMTree:
 
 class FileSystemTree(TMTree):
     """A tree representation of files and folders in a file system.
-
     The internal nodes represent folders, and the leaves represent regular
     files (e.g., PDF documents, movie files, Python source code files, etc.).
-
     The _name attribute stores the *name* of the folder or file, not its full
     path. E.g., store 'assignments', not '/Users/Diane/csc148/assignments'
-
     The data_size attribute for regular files is simply the size of the file,
     as reported by os.path.getsize.
     """
 
     def __init__(self, path: str) -> None:
         """Store the file tree structure contained in the given file or folder.
-
         Precondition: <path> is a valid path for this computer.
         """
         # Remember that you should recursively go through the file system
@@ -453,7 +434,6 @@ class FileSystemTree(TMTree):
         else:
             subdirectories = []
             for subdirectory in os.listdir(path):
-                # if subdirectory != '.DS_Store':
                 a = FileSystemTree(os.path.join(path, subdirectory))
                 subdirectories.append(a)
         TMTree.__init__(self, n, subdirectories, ds)
@@ -479,9 +459,24 @@ class FileSystemTree(TMTree):
         else:
             return ' (folder)'
 
+    def print_co(self, depth: int = 0) -> None:
+        """ nice one
+
+        >>> f = FileSystemTree('/Users/16475/Desktop/csc148/assignments/a2/example-directory')
+        >>> f.update_rectangles((0, 0, 200, 100))
+        >>> f.print_co()
+        """
+        if self.is_empty():
+            pass
+        else:
+            print(depth*"  ", self.rect)
+            for subtree in self._subtrees:
+                subtree.print_co(depth+1)
+
+
+
 
 if __name__ == '__main__':
-
     # import python_ta
     # python_ta.check_all(config={
     #     'allowed-import-modules': [
@@ -489,10 +484,14 @@ if __name__ == '__main__':
     #     ]
     # })
 
-    f = FileSystemTree('/Users/adityagoyal/Documents/csc148/assignments/a2/example-directory')
-    f.update_rectangles((0, 0, 200, 100))
-    print(f.get_rectangles())
-    # print_items('/Users/adityagoyal/Documents/csc148/assignments', '')
+    import doctest
+    doctest.testmod()
+    f = FileSystemTree('/Users/16475/Desktop/csc148/assignments/a2/example-directory')
+    # FileSystemTree(f)
+
+    # f.update_rectangles((0, 0, 200, 100))
+    # f.get_rectangles()
+    #print(f.get_rectangles())
     # f._how_many_trees()
     # print(f.get_path_string())
-    print(f.get_tree_at_position((90, 100))._name)
+    #print(f.get_tree_at_position((90, 100))._name)
