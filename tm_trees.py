@@ -99,6 +99,8 @@ class TMTree:
         # 1. Initialize self._colour and self.data_size, according to the
         # docstring.
         # 2. Set this tree as the parent for each of its subtrees.
+        for subtree in self._subtrees:
+            subtree._parent_tree = self 
 
         #
         # if self.is_empty()
@@ -196,6 +198,7 @@ class TMTree:
         appropriate pygame rectangle to display for a leaf, and the colour
         to fill it with.
         >>> f = FileSystemTree('/Users/16475/Desktop/csc148/assignments/a2/example-directory/workshop')
+        >>> f.expand()
         >>> f.get_rectangles()
         """
         # TODO: (Task 2) Complete the body of this method.
@@ -223,7 +226,7 @@ class TMTree:
         # TODO: (Task 3) Complete the body of this method
         a, b = pos
         x, y, width, height = self.rect
-        if x <= a <= width and y <= b <= height:
+        if x <= a <= x + width and y <= b <= y + height:
             return self._get_tmtree_in_range(pos)
         else:
             return None
@@ -235,7 +238,7 @@ class TMTree:
             return None
         elif len(self._subtrees) == 0 or self._expanded is False:
             x, y, width, height = self.rect
-            if x <= pos[0] <= width and y <= pos[1] <= height:
+            if x <= pos[0] <= x + width and y <= pos[1] <= y + height:
                 return self
             else:
                 return None
