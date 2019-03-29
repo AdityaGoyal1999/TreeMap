@@ -104,7 +104,7 @@ class TMTree:
             subtree._parent_tree = self
 
         self._colour = (randint(0, 255), randint(0, 255), randint(0, 255))
-        if len(subtrees) == 0:
+        if len(self._subtrees) == 0:
             self.data_size = data_size
         else:
             self.data_size = self._calculate_data_size()
@@ -141,20 +141,17 @@ class TMTree:
         # elements of a rectangle, as follows.
         # x, y, width, height = rect
         if self.data_size == 0:
-            pass
+            self.rect = (0, 0, 0, 0)
         else:
             x, y, width, height = rect
             self.rect = (x, y, width, height)
             if width > height:
-                # this is opposed to the index looping - this helps to check if
-                # the subtree is the last element in the subtree
+                # Count represents the index in self._subtrees
                 count = 0
                 # w1 is to keep the progress of the x value
                 w1 = x
                 for subtree in self._subtrees:
-                    # For the last subtree, the w1 value is correct, but we still
-                    # need to calculate the width because it does not represent
-                    # "rest of the space".
+                    # If its the last subtree, fill the rest of the space.
                     if count == len(self._subtrees) - 1:
                         subtree.rect = (x + w1, y, width - x - w1, height)
                         subtree.update_rectangles(subtree.rect)
@@ -164,13 +161,13 @@ class TMTree:
                         x = x + w1
                         w1 = percentage * width
                         w1 = math.floor(w1)
-                        subtree.rect = (x, y, w1, height)
-                        subtree.update_rectangles(subtree.rect)
+                        subtree.update_rectangles((x, y, w1, height))
                         count += 1
             else:   # width <= height
                 count = 0
                 h1 = y
                 for subtree in self._subtrees:
+                    # Enter if block if its in the last subtree
                     if count == len(self._subtrees) - 1:
                         subtree.rect = (x, y + h1, width, height - y - h1)
                         subtree.update_rectangles(subtree.rect)
@@ -246,18 +243,19 @@ class TMTree:
         # TODO: (Task 4) Complete the body of this method.
         if self.is_empty():
             return 0
-        elif len(self._subtrees) == 0:
+        elif self._subtrees == []:
             return self.data_size
         else:
+            total = 0
             for subtree in self._subtrees:
-                subtree.data_size = subtree._calculate_data_size()
-            self.data_size = self._calculate_data_size()
-            return self.data_size
-
+                total += subtree.update_data_sizes()
+            self.data_size = total
+            return total
 
     def move(self, destination: TMTree) -> None:
         """If this tree is a leaf, and <destination> is not a leaf, move this
         tree to be the last subtree of <destination>. Otherwise, do nothing.
+
         """
         # TODO: (Task 4) Complete the body of this method.
         # If this tree is a leaf, and destination is not a leaf
@@ -286,6 +284,8 @@ class TMTree:
                 val = factor * self.data_size
                 val = math.floor(val)
                 self.data_size += val
+                if self.data_size < 1:
+                    self.data_size = 1
 
     def expand_all(self) -> None:
         """ Expands all the corresponding tree and subtrees when the user wants.
@@ -346,7 +346,7 @@ class TMTree:
     # TODO: (Task 5) Write the methods expand, expand_all, collapse, and
     # TODO: collapse_all, and add the displayed-tree functionality to the
     # TODO: methods from Tasks 2 and 3
-
+    # This method is never used. Delete it later.
     def _update_parent(self) -> None:
         """ Updates the values of the parent trees through recursion.
         """
@@ -412,7 +412,6 @@ class FileSystemTree(TMTree):
         ds = os.path.getsize(path)
         if not os.path.isdir(path):
             subdirectories = []
-
         else:
             subdirectories = []
             for subdirectory in os.listdir(path):
@@ -456,21 +455,18 @@ class FileSystemTree(TMTree):
             for subtree in self._subtrees:
                 subtree.print_co(depth+1)
 
-    def _number_of_trees(self) ->int:
+    def _number_of_trees(self) -> None:
         """ Tells the size of the tree.
-
-        >>> f = FileSystemTree('/Users/16475/Desktop/csc148/assignments/a2/example-directory')
-        >>> f._number_of_trees()
-        >>> 12
         """
         if self.is_empty():
             return 0
         else:
             count = 1
-            print(self._name)
+            if self._parent_tree is not None:
+                print('Name: ', self._name, ' Parent: ', self._parent_tree._name)
+                print('Data size: ', self.data_size)
             for subtree in self._subtrees:
-                count += subtree._number_of_trees()
-            return count
+                subtree._number_of_trees()
 
 
 
@@ -487,7 +483,7 @@ if __name__ == '__main__':
     doctest.testmod()
     f = FileSystemTree('/Users/16475/Desktop/csc148/assignments/a2/example-directory')
     # FileSystemTree(f)
-
+    print(f._number_of_trees())
     # f.update_rectangles((0, 0, 200, 100))
     # f.get_rectangles()
     #print(f.get_rectangles())
