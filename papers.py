@@ -72,21 +72,15 @@ class PaperTree(TMTree):
     === Private Attributes ===
     TODO: Add any of your new private attributes here.
     These should store information about this paper's <authors> and <doi>.
-    --- I added the following lines
-    _author:
-            Stores the name of the author
-    _doi:
-            Stores the url of this author
-    _citations:
-            Stores the number of citations
-    _all_papers:
-            Represents whether an instance if the root of the paper tree. If
-            true, load the paper tree. If not, do NOT load anything.
-    _by_year:
-            Represent whether the first level of subcategory should be "years".
-            If true, it should be. If not, the tree does not contain "years" in
-            any of it's levels.
-    ----
+
+    _authors: a str for the authors of the paper
+
+    _doi: A Digital Object Identifier for the paper
+
+    _citations: the number of citations of a paper
+        * citations is for acknowledging the paper *
+
+    _by_year: the year
 
     === Inherited Attributes ===
     rect:
@@ -108,14 +102,29 @@ class PaperTree(TMTree):
 
     === Representation Invariants ===
     - All TMTree RIs are inherited.
+
+    ### Remove this later on
+    - data_size >= 0
+    - If _subtrees is not empty, then data_size is equal to the sum of the
+      data_size of each subtree.
+    - _colour's elements are each in the range 0-255.
+    - If _name is None, then _subtrees is empty, _parent_tree is None, and
+      data_size is 0.
+      This setting of attributes represents an empty tree.
+    - if _parent_tree is not None, then self is in _parent_tree._subtrees
+    - if _expanded is True, then _parent_tree._expanded is True
+    - if _expanded is False, then _expanded is False for every tree
+      in _subtrees
+    - if _subtrees is empty, then _expanded is False
     """
 
     # TODO: Add the type contracts for your new attributes here
-    _author: str
+
+    _authors: str
     _doi: str
     _citations: int
-    _all_papers: bool
     _by_year: bool
+    _all_papers: bool
 
     def __init__(self, name: str, subtrees: List[TMTree], authors: str = '',
                  doi: str = '', citations: int = 0, by_year: bool = True,
@@ -135,26 +144,15 @@ class PaperTree(TMTree):
         """
         # TODO: Complete this initializer. Your implementation must not
         # TODO: duplicate anything done in the superclass initializer.
-        # Inherit attributes from superclass.
-        TMTree.__init(self, name, subtrees)
-
-        # Initialize the rest of the attributes manually.
-        self._author = authors
-        self._citations = citations
+        self._authors = authors
         self._doi = doi
-        self._all_papers = all_papers
+        self._citations = citations
         self._by_year = by_year
-
-        # Check whether this tree needs to load data
-        if self._all_papers:
-            # Load data
-            pass
-        else:
-            # Do not load new data
-            pass
+        # this makes the root when it is True
+        self._all_papers = all_papers
 
 
-
+        TMTree.__init__(self, name, subtrees)
 
 def _load_papers_to_dict(by_year: bool = True) -> Dict:
     """Return a nested dictionary of the data read from the papers dataset file.
@@ -163,7 +161,85 @@ def _load_papers_to_dict(by_year: bool = True) -> Dict:
     the whole tree. Otherwise, ignore years and use categories only.
     """
     # TODO: Implement this helper, or remove it if you do not plan to use it
+    dic = {}
+    if by_year:
+        with open(DATA_FILE, 'r') as csvfile:
+            lines = csvfile.readlines()
+            lines.pop(0)
+            for line in lines:
+                lst = _string_helper(line)
+                category = lst[3]
+                categories = category.split(':')
+                # strips the strings
+                for cat in range(len(categories)):
+                    categories[cat] = categories[cat].strip()
+                if len(dic) == 0:
+                    dic = category._recursive_dictionary(categories)
+                else:
+                    _recursive_dict_update(dic, categories)
 
+    else:
+        with open(DATA_FILE, 'r') as csvfile:
+            # line is the list of lines
+            lines = csvfile.readlines()
+            lines.pop(0)
+            for line in lines:
+                lst = _string_helper(line)
+                category = lst[3]
+                categories = category.split(':')
+                for cat in range(len(categories)):
+                    categories[cat] = categories[cat].strip()
+                if len(dic) == 0:
+                    dic = _recursive_dictionary(categories)
+                else:
+                    _recursive_dict_update(dic, categories)
+    return dic
+
+
+def _recursive_dict_update(dic: dict, lst: list) -> None:
+    """
+
+    """
+    if len(lst) == 0:
+        pass
+    else:
+        if lst[0] in dic:
+            _recursive_dict_update(dic[lst[0]], lst[1:])
+        else:
+            new_dict = _recursive_dictionary(lst[1:])
+            dic[lst[0]] = new_dict
+
+
+def _recursive_dictionary(lst: list) -> dict:
+    """
+    """
+    # what am I supposed to add here?
+    if len(lst) == 0:
+        return {}
+    else:
+        dic = {lst[0]: {}}
+        dic[lst[0]].update(_recursive_dictionary(lst[1:]))
+        return dic
+
+
+def _string_helper(s: str) -> list:
+    """ Own - returns the list with the desired elements of the string.
+    """
+    lst = []
+    index1 = s.find('"')
+    index2 = s[1:].find('"')
+    index1 += 1
+    index2 += 1
+    lst.append(s[index1:index2])
+    lst2 = s[index2+2:].split(',')
+    lst.extend(lst2)
+    print(lst[3])
+    return lst
+
+
+def _display_trees():
+    """ Displays the trees for testing purpose"""
+    pass
 
 
 def _build_tree_from_dict(nested_dict: Dict) -> List[PaperTree]:
@@ -173,9 +249,21 @@ def _build_tree_from_dict(nested_dict: Dict) -> List[PaperTree]:
 
 
 if __name__ == '__main__':
-    import python_ta
-    python_ta.check_all(config={
-        'allowed-import-modules': ['python_ta', 'typing', 'csv', 'tm_trees'],
-        'allowed-io': ['_load_papers_to_dict'],
-        'max-args': 8
-    })
+    # import python_ta
+    # python_ta.check_all(config={
+    #     'allowed-import-modules': ['python_ta', 'typing', 'csv', 'tm_trees'],
+    #     'allowed-io': ['_load_papers_to_dict'],
+    #     'max-args': 8
+    # })
+
+    paper_tree = PaperTree('CS1', [], all_papers=True, by_year=False)
+    print(_load_papers_to_dict(False))
+
+    # import doctest
+    # doctest.testmod()
+
+    # dic = _recursive_dictionary(['a', 'b', 'c', 'd'])
+    # _recursive_dict_update(dic, ['a', 'b', 'c', 'd', 'e'])
+    # print(dic)
+
+
