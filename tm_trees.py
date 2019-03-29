@@ -142,11 +142,6 @@ class TMTree:
         # x, y, width, height = rect
         if self.data_size == 0:
             pass
-        # When self is a leaf, but not a root
-        # elif self._parent_tree is not None and len(self._parent_tree._subtrees)\
-        #         == 1:
-        #     self.rect = rect
-
         else:
             x, y, width, height = rect
             self.rect = (x, y, width, height)
@@ -254,41 +249,43 @@ class TMTree:
         elif len(self._subtrees) == 0:
             return self.data_size
         else:
-            size = 0
             for subtree in self._subtrees:
-                val = subtree.update_data_sizes()
-                size += val
-                subtree.data_size += val
-            self.data_size = size
-            return size
+                subtree.data_size = subtree._calculate_data_size()
+            self.data_size = self._calculate_data_size()
+            return self.data_size
+
 
     def move(self, destination: TMTree) -> None:
         """If this tree is a leaf, and <destination> is not a leaf, move this
         tree to be the last subtree of <destination>. Otherwise, do nothing.
         """
         # TODO: (Task 4) Complete the body of this method.
+        # If this tree is a leaf, and destination is not a leaf
         if len(self._subtrees) == 0 and len(destination._subtrees) > 0:
             remove_subtree = self
+            self._parent_tree._subtrees.remove(remove_subtree)
             destination._subtrees.append(remove_subtree)
-            self._parent_tree.remove(remove_subtree)
-        else:
-            pass
+            remove_subtree._parent_tree = destination
 
     def change_size(self, factor: float) -> None:
         """Change the value of this tree's data_size attribute by <factor>.
         Always round up the amount to change, so that it's an int, and
         some change is made.
         Do nothing if this tree is not a leaf.
+        >>> f = FileSystemTree('/Users/16475/Desktop/csc148/assignments/a2/example-directory/workshop/draft.pptx')
+        >>> f.change_size(0.01)
+
         """
         # TODO: (Task 4) Complete the body of this method
-        val = factor * self.data_size
-        val = round(val)
-        val2 = self.data_size
-        if val + val2 < 1:
-            pass
-        else:
-            self.data_size += val
-            self._update_parent()
+        if len(self._subtrees) == 0:
+            if factor > 0:
+                val = factor * self.data_size
+                val = math.ceil(val)
+                self.data_size += val
+            else:
+                val = factor * self.data_size
+                val = math.floor(val)
+                self.data_size += val
 
     def expand_all(self) -> None:
         """ Expands all the corresponding tree and subtrees when the user wants.
@@ -316,20 +313,6 @@ class TMTree:
     def collapse(self) -> None:
         """ Collapses the corresponding tree.
         """
-        # if self.is_empty():
-        #     pass
-        # elif len(self._subtrees) == 0:
-        #     for subtree in self._parent_tree._subtrees:
-        #         subtree.collapse()
-        # else:
-        # if self.is_empty():
-        #     pass
-        # elif self._parent_tree is None:
-        #     pass
-        # else:
-        #     self._expanded = False
-        #     for subtree in self._parent_tree._subtrees:
-        #         subtree._expanded = False
         if self.is_empty():
             pass
         elif self._parent_tree is None:
@@ -358,30 +341,6 @@ class TMTree:
             self._collapse_helper()
         else:
             self._parent_tree.collapse_all()
-    #
-    # def _collapse_all_helper2(self) -> Optional[TMTree]:
-    #     """ Collapses the whole corresponding tree.
-    #     """
-    #     if self.is_empty():
-    #         return None
-    #     elif self._parent_tree is None:
-    #         return self
-    #     else:
-    #         return self._parent_tree._collapse_all_helper2()
-    #
-    # def _collapse_all_helper1(self, depth: int = 0):
-    #     """ Collapses all the rectangles.
-    #     """
-    #     if self.is_empty():
-    #         pass
-    #     else:
-    #         if depth == 0:
-    #             tree = self._collapse_all_helper2()
-    #         else:
-    #             tree = self
-    #         tree._expanded = False
-    #         for subtree in tree._subtrees:
-    #             subtree._collapse_all_helper1(depth+1)
 
 
     # TODO: (Task 5) Write the methods expand, expand_all, collapse, and
