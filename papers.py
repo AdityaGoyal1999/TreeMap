@@ -59,7 +59,7 @@ Recommended steps:
    on your code.
 """
 import csv
-from typing import List, Dict
+from typing import List, Dict, Union
 from tm_trees import TMTree
 
 # Filename for the dataset
@@ -173,8 +173,9 @@ def _load_papers_to_dict(by_year: bool = True) -> Dict:
                 categories = l[3].split(':')
                 for i in range(len(categories)):
                     categories[i] = categories[i].strip()
-                dic1 = _recursive_dictionary(categories)
-                _recursive_dict_update(dic, categories)
+                tup = (l[0], l[1], l[2], l[3], l[4], l[5])
+                # dic1 = _recursive_dictionary(categories, tup)
+                _recursive_dict_update(dic, categories, tup)
 
     else:
         with open(DATA_FILE, 'r') as csvfile:
@@ -190,37 +191,61 @@ def _load_papers_to_dict(by_year: bool = True) -> Dict:
             #     if len(dic) == 0:
             #         dic = _recursive_dictionary(categories)
             #     else:
-            #         _recursive_dict_update(dic, categories)
+            #         _recursive_dict_update(dic
             pass
     return dic
 
 
-def _recursive_dict_update(dic: dict, lst: list) -> None:
+def _recursive_dict_update(dic: dict, lst: list, tup: tuple) -> None:
     """
-
     """
     if len(lst) == 0:
         pass
     else:
         if lst[0] in dic:
-            _recursive_dict_update(dic[lst[0]], lst[1:])
+            # Potential bug
+            if isinstance(dic[lst[0]][0], dict):
+                _recursive_dict_update(dic[lst[0]][0], lst[1:], tup)
+            else:
+                dic[lst[0]].insert(0, _recursive_dictionary(lst, tup))
         else:
-            new_dict = _recursive_dictionary(lst[1:])
-            dic[lst[0]] = new_dict
+            new_dict = _recursive_dictionary(lst, tup)
+            if isinstance(new_dict, tuple):
+                dic[lst[0]].append(new_dict)
+            else:
+                dic[lst[0]] = new_dict[lst[0]]
 
 
-def _recursive_dictionary(lst: list) -> dict:
+def _recursive_dictionary(lst: list, tup: tuple) -> Union[dict, tuple]:
     """
     """
     # what am I supposed to add here?
     if len(lst) == 0:
-        return {}
+        return tup
     else:
-        dic = {lst[0]: {}}
-        dic[lst[0]].update(_recursive_dictionary(lst[1:]))
+        dic = {lst[0]: []}
+        val = _recursive_dictionary(lst[1:], tup)
+        if isinstance(val, dict):
+            dic[lst[0]].append(val)
+        else: #isinstance(val, tuple)
+            dic[lst[0]].append(val)
         return dic
 
 
+def check_structure(dic: Union[dict, tuple]) -> int:
+    """ Gives the number of tuples leaves inside the generated dataset.
+    """
+    if isinstance(dic, tuple):
+        return 1
+    else:
+        count = 0
+        for v in dic:
+            for a in dic[v]:
+                if isinstance(a, dict):
+                    count += check_structure(v)
+                elif isinstance(a, tuple):
+                    count += 1
+        return count
 # def _string_helper(s: str) -> list:
 #     """ Own - returns the list with the desired elements of the string.
 #     """
@@ -256,13 +281,8 @@ if __name__ == '__main__':
     # })
 
     paper_tree = PaperTree('CS1', [], all_papers=True, by_year=False)
-    print(_load_papers_to_dict())
+    dic = _load_papers_to_dict()
+    print(check_structure(dic))
 
-    # import doctest
-    # doctest.testmod()
-
-    # dic = _recursive_dictionary(['a', 'b', 'c', 'd'])
-    # _recursive_dict_update(dic, ['a', 'b', 'c', 'd', 'e'])
-    # print(dic)
-
-
+    import doctest
+    doctest.testmod()
