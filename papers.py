@@ -162,37 +162,36 @@ def _load_papers_to_dict(by_year: bool = True) -> Dict:
     """
     # TODO: Implement this helper, or remove it if you do not plan to use it
     dic = {}
+    lst = []
     if by_year:
         with open(DATA_FILE, 'r') as csvfile:
-            lines = csvfile.readlines()
-            lines.pop(0)
-            for line in lines:
-                lst = _string_helper(line)
-                category = lst[3]
-                categories = category.split(':')
-                # strips the strings
-                for cat in range(len(categories)):
-                    categories[cat] = categories[cat].strip()
-                if len(dic) == 0:
-                    dic = category._recursive_dictionary(categories)
-                else:
-                    _recursive_dict_update(dic, categories)
+            my_file = csv.reader(csvfile)
+            for rows in my_file:
+                lst.append(rows)
+            lst = lst[1:]
+            for l in lst:
+                categories = l[3].split(':')
+                for i in range(len(categories)):
+                    categories[i] = categories[i].strip()
+                dic1 = _recursive_dictionary(categories)
+                _recursive_dict_update(dic, categories)
 
     else:
         with open(DATA_FILE, 'r') as csvfile:
-            # line is the list of lines
-            lines = csvfile.readlines()
-            lines.pop(0)
-            for line in lines:
-                lst = _string_helper(line)
-                category = lst[3]
-                categories = category.split(':')
-                for cat in range(len(categories)):
-                    categories[cat] = categories[cat].strip()
-                if len(dic) == 0:
-                    dic = _recursive_dictionary(categories)
-                else:
-                    _recursive_dict_update(dic, categories)
+            # # line is the list of lines
+            # lines = csvfile.readlines()
+            # lines.pop(0)
+            # for line in lines:
+            #     lst = _string_helper(line)
+            #     category = lst[3]
+            #     categories = category.split(':')
+            #     for cat in range(len(categories)):
+            #         categories[cat] = categories[cat].strip()
+            #     if len(dic) == 0:
+            #         dic = _recursive_dictionary(categories)
+            #     else:
+            #         _recursive_dict_update(dic, categories)
+            pass
     return dic
 
 
@@ -222,19 +221,19 @@ def _recursive_dictionary(lst: list) -> dict:
         return dic
 
 
-def _string_helper(s: str) -> list:
-    """ Own - returns the list with the desired elements of the string.
-    """
-    lst = []
-    index1 = s.find('"')
-    index2 = s[1:].find('"')
-    index1 += 1
-    index2 += 1
-    lst.append(s[index1:index2])
-    lst2 = s[index2+2:].split(',')
-    lst.extend(lst2)
-    print(lst[3])
-    return lst
+# def _string_helper(s: str) -> list:
+#     """ Own - returns the list with the desired elements of the string.
+#     """
+#     lst = []
+#     index1 = s.find('"')
+#     index2 = s[1:].find('"')
+#     index1 += 1
+#     index2 += 1
+#     lst.append(s[index1:index2])
+#     lst2 = s[index2+2:].split(',')
+#     lst.extend(lst2)
+#     print(lst[3])
+#     return lst
 
 
 def _display_trees():
@@ -257,7 +256,7 @@ if __name__ == '__main__':
     # })
 
     paper_tree = PaperTree('CS1', [], all_papers=True, by_year=False)
-    print(_load_papers_to_dict(False))
+    print(_load_papers_to_dict())
 
     # import doctest
     # doctest.testmod()
