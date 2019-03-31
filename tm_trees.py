@@ -190,7 +190,7 @@ class TMTree:
         """
         # TODO: (Task 2) Complete the body of this method.
 
-        if self.is_empty():
+        if self.is_empty() or self.data_size == 0:
             return []
         # Unopened empty folder or file
         elif len(self._subtrees) == 0 or self._expanded is False:
@@ -260,19 +260,16 @@ class TMTree:
         # TODO: (Task 4) Complete the body of this method.
         # If this tree is a leaf, and destination is not a leaf
         if len(self._subtrees) == 0 and len(destination._subtrees) > 0:
-            remove_subtree = self
-            self._parent_tree._subtrees.remove(remove_subtree)
-            destination._subtrees.append(remove_subtree)
-            remove_subtree._parent_tree = destination
+            self._parent_tree._subtrees.remove(self)
+            self._parent_tree.data_size -= self.data_size
+            destination._subtrees.append(self)
+            self._parent_tree = destination
 
     def change_size(self, factor: float) -> None:
         """Change the value of this tree's data_size attribute by <factor>.
         Always round up the amount to change, so that it's an int, and
         some change is made.
         Do nothing if this tree is not a leaf.
-        >>> f = FileSystemTree('/Users/16475/Desktop/csc148/assignments/a2/example-directory/workshop/draft.pptx')
-        >>> f.change_size(0.01)
-
         """
         # TODO: (Task 4) Complete the body of this method
         if len(self._subtrees) == 0:
@@ -346,16 +343,6 @@ class TMTree:
     # TODO: (Task 5) Write the methods expand, expand_all, collapse, and
     # TODO: collapse_all, and add the displayed-tree functionality to the
     # TODO: methods from Tasks 2 and 3
-    # This method is never used. Delete it later.
-    def _update_parent(self) -> None:
-        """ Updates the values of the parent trees through recursion.
-        """
-        # this condition could be problematic
-        if self._parent_tree is None:
-            pass
-        else:
-            self._parent_tree.update_data_sizes()
-            self._parent_tree._parent_tree._update_parent()
 
     # Methods for the string representation
     def get_path_string(self, final_node: bool = True) -> str:
@@ -442,11 +429,7 @@ class FileSystemTree(TMTree):
             return ' (folder)'
 
     def print_co(self, depth: int = 0) -> None:
-        """ nice one
-
-        >>> f = FileSystemTree('/Users/16475/Desktop/csc148/assignments/a2/example-directory')
-        >>> f.update_rectangles((0, 0, 200, 100))
-        >>> f.print_co()
+        """ Prints co-ordinates of all rectangles
         """
         if self.is_empty():
             pass
