@@ -150,7 +150,11 @@ class PaperTree(TMTree):
         self._by_year = by_year
         # this makes the root when it is True
         self._all_papers = all_papers
-
+        # I am not sure about this
+        if all_papers:
+            TMTree.__init__(self, subtrees, citations)
+        else:
+            TMTree.__init__()
 
         TMTree.__init__(self, name, subtrees)
 
@@ -198,37 +202,75 @@ def _load_papers_to_dict(by_year: bool = True) -> Dict:
 
 
 def _recursive_dict_update(dic: dict, lst: list, tup: tuple) -> None:
-    """
+    """ Actual recursive dictionary.
     """
     if len(lst) == 0:
-        _recursive_dictionary(lst, tup)
+        if isinstance(dic, tuple):
+            pass
+        else:
+            dic[tup[4]] = tup
     else:
         if lst[0] in dic:
-            # Potential bug
-            if isinstance(dic[lst[0]][0], dict):
-                _recursive_dict_update(dic[lst[0]][0], lst[1:], tup)
+            if isinstance(dic[lst[0]], tuple):
+                new_dict = _recursive_dictionary(lst[1:], tup)
+                if isinstance(new_dict, tuple):
+                    dic[tup[4]] = new_dict
+                else:
+                    dic[lst[0]].update(new_dict)
             else:
-                dic[lst[0]].append(_recursive_dictionary(lst, tup))
+                _recursive_dict_update(dic[lst[0]], lst[1:], tup)
         else:
-            new_dict = _recursive_dictionary(lst, tup)
-            if isinstance(new_dict, tuple):
-                dic[lst[0]] = [new_dict]
+            new_dict = _recursive_dictionary(lst[1:], tup)
+            if isinstance(dic, tuple):
+                pass
             else:
-                dic[lst[0]] = new_dict[lst[0]]
+                dic[lst[0]] = new_dict
 
+# def _recursive_dict_update(dic: dict, lst: list, tup: tuple) -> None:
+#     """
+#     """
+#     if len(lst) == 0:
+#         # potential bug
+#         _recursive_dictionary(lst, tup)
+#     else:
+#         if lst[0] in dic:
+#             if isinstance(dic[lst[0]][0], dict):
+#                 _recursive_dict_update(dic[lst[0]][0], lst[1:], tup)
+#             else:
+#                 dic[lst[0]].append(_recursive_dictionary(lst, tup))
+#         else:
+#             new_dict = _recursive_dictionary(lst, tup)
+#             if isinstance(new_dict, tuple):
+#                 dic[lst[0]] = [new_dict]
+#             else:
+#                 dic[lst[0]] = new_dict[lst[0]]
+
+
+# def _recursive_dictionary(lst: list, tup: tuple) -> Union[dict, tuple]:
+#     """
+#     """
+#     if len(lst) == 0:
+#         return tup
+#     else:
+#         dic = {lst[0]: []}
+#         val = _recursive_dictionary(lst[1:], tup)
+#         if isinstance(val, dict):
+#             dic[lst[0]].append(val)
+#         else: #isinstance(val, tuple)
+#             dic[lst[0]].append(val)
+#         return dic
 
 def _recursive_dictionary(lst: list, tup: tuple) -> Union[dict, tuple]:
-    """
-    """
+    """ The actual nested dictionary."""
     if len(lst) == 0:
-        return tup
+        return {tup[4]: tup}
     else:
-        dic = {lst[0]: []}
+        dic = {lst[0]: {}}
         val = _recursive_dictionary(lst[1:], tup)
-        if isinstance(val, dict):
-            dic[lst[0]].append(val)
-        else: #isinstance(val, tuple)
-            dic[lst[0]].append(val)
+        if isinstance(val, tuple):
+            dic[lst[0]][tup[4]] = val
+        else:
+            dic[lst[0]].update(val)
         return dic
 
 
@@ -239,40 +281,40 @@ def check_structure(dic: Union[dict, tuple]) -> int:
         return 1
     else:
         count = 0
-        for v in dic:
-            for a in dic[v]:
-                if isinstance(a, dict):
-                    count += check_structure(a)
-                elif isinstance(a, tuple):
-                    count += 1
+        for val in dic:
+            if isinstance(dic[val], tuple):
+                count += 1
+            else:
+                for v in dic[val]:
+                    if isinstance(dic[val][v], tuple):
+                        count += 1
+                    else:
+                        count += check_structure(dic[val][v])
         return count
-# def _string_helper(s: str) -> list:
-#     """ Own - returns the list with the desired elements of the string.
-#     """
-#     lst = []
-#     index1 = s.find('"')
-#     index2 = s[1:].find('"')
-#     index1 += 1
-#     index2 += 1
-#     lst.append(s[index1:index2])
-#     lst2 = s[index2+2:].split(',')
-#     lst.extend(lst2)
-#     print(lst[3])
-#     return lst
-
-
-def _display_trees():
-    """ Displays the trees for testing purpose"""
-    pass
 
 
 def _build_tree_from_dict(nested_dict: Dict) -> List[PaperTree]:
     """Return a list of trees from the nested dictionary <nested_dict>.
     """
     # TODO: Implement this helper, or remove it if you do not plan to use it
+    lst = []
+    # for element in nested_dict:
+    #     for dot in element:
+    #         if isinstance(dot, dict):
+    #             lst += build_tree_from_dict(dot)
+    #         else:
+    #             # not sure
+    #             lst .append(PaperTree(dot[1], [], dot[0], dot[4], dot[5]))
+    for elements in nested_dict:
+        lst2 = []
+        for e in nested_dict[elements]:
+            if isinstance(nested_dict[elements][e], tuple):
+                val = nested_dict[elements][e]
+                lst2.append(PaperTree(val[1], [], val[0], val[4], val[5]))
+            else:
+                pass
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     # import python_ta
     # python_ta.check_all(config={
     #     'allowed-import-modules': ['python_ta', 'typing', 'csv', 'tm_trees'],
@@ -285,5 +327,6 @@ if __name__ == '__main__':
     print(check_structure(dic))
 
 
-    import doctest
-    doctest.testmod()
+    #
+    # import doctest
+    # doctest.testmod()
