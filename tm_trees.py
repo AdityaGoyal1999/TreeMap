@@ -255,7 +255,6 @@ class TMTree:
     def move(self, destination: TMTree) -> None:
         """If this tree is a leaf, and <destination> is not a leaf, move this
         tree to be the last subtree of <destination>. Otherwise, do nothing.
-
         """
         # TODO: (Task 4) Complete the body of this method.
         # If this tree is a leaf, and destination is not a leaf
@@ -287,14 +286,31 @@ class TMTree:
     def expand_all(self) -> None:
         """ Expands all the corresponding tree and subtrees when the user wants.
         """
+        # This code has some bug because it only opens self's subtrees, not everything
+        # if self.is_empty():
+        #     pass
+        # elif len(self._subtrees) == 0:
+        #     pass
+        # else:
+        #     self._expanded = True
+        #     for subtree in self._subtrees:
+        #         subtree.expand_all()
         if self.is_empty():
             pass
-        elif len(self._subtrees) == 0:
+        elif self._parent_tree is None:
+            # Call helper
+            self._expand_helper()
+            pass
+        else:
+            self._parent_tree.expand_all()
+
+    def _expand_helper(self) -> None:
+        if self.is_empty():
             pass
         else:
             self._expanded = True
             for subtree in self._subtrees:
-                subtree.expand_all()
+                subtree._expand_helper()
 
     def expand(self) -> None:
         """ Expands the corresponding subtree as the user wants.
