@@ -210,30 +210,49 @@ class TMTree:
         above for a horizontal boundary.
         """
         # TODO: (Task 3) Complete the body of this method
-        a, b = pos
-        x, y, width, height = self.rect
-        if x <= a <= x + width and y <= b <= y + height:
-            return self._get_tmtree_in_range(pos)
-        else:
-            return None
-
-    def _get_tmtree_in_range(self, pos: Tuple[int, int]) -> Optional[TMTree]:
-        """ Recursively returns the leaf which is in the range.
-        """
+        # a, b = pos
+        # x, y, width, height = self.rect
+        # if x <= a <= x + width and y <= b <= y + height:
+        #     return self._get_tmtree_in_range(pos)
+        # else:
+        #     return None
+        # I combined this function with the helper function because it wasn't.
+        # necessary. MAKE SURE TO TEST FOR TIES. WE ARE NOT DOING ANYTHING
+        # SPECIAL TO BREAK TIES AT THE MOMENT.
         if self.is_empty():
             return None
         elif len(self._subtrees) == 0 or self._expanded is False:
             x, y, width, height = self.rect
-            if x <= pos[0] <= x + width and y <= pos[1] <= y + height:
+            if (x <= pos[0] <= x + width) and (y <= pos[1] <= y + height):
                 return self
             else:
                 return None
         else:
             for subtree in self._subtrees:
-                val = subtree._get_tmtree_in_range(pos)
+                val = subtree.get_tree_at_position(pos)
                 if val is not None:
                     return val
             return None
+
+    def _get_tmtree_in_range(self, pos: Tuple[int, int]) -> Optional[TMTree]:
+        """ Recursively returns the leaf which is in the range.
+        """
+        # if self.is_empty():
+        #     return None
+        # elif len(self._subtrees) == 0 or self._expanded is False:
+        #     x, y, width, height = self.rect
+        #     if x <= pos[0] <= x + width and y <= pos[1] <= y + height:
+        #         return self
+        #     else:
+        #         return None
+        # else:
+        #     for subtree in self._subtrees:
+        #         val = subtree._get_tmtree_in_range(pos)
+        #         if val is not None:
+        #             return val
+        #     return None
+
+        # Delete this function later because it is not being used anymore.
 
     def update_data_sizes(self) -> int:
         """Update the data_size for this tree and its subtrees, based on the
@@ -286,31 +305,14 @@ class TMTree:
     def expand_all(self) -> None:
         """ Expands all the corresponding tree and subtrees when the user wants.
         """
-        # This code has some bug because it only opens self's subtrees, not everything
-        # if self.is_empty():
-        #     pass
-        # elif len(self._subtrees) == 0:
-        #     pass
-        # else:
-        #     self._expanded = True
-        #     for subtree in self._subtrees:
-        #         subtree.expand_all()
         if self.is_empty():
             pass
-        elif self._parent_tree is None:
-            # Call helper
-            self._expand_helper()
-            pass
-        else:
-            self._parent_tree.expand_all()
-
-    def _expand_helper(self) -> None:
-        if self.is_empty():
+        elif len(self._subtrees) == 0:
             pass
         else:
             self._expanded = True
             for subtree in self._subtrees:
-                subtree._expand_helper()
+                subtree.expand_all()
 
     def expand(self) -> None:
         """ Expands the corresponding subtree as the user wants.
@@ -322,7 +324,6 @@ class TMTree:
         else:
             self._expanded = True
 
-    # collapse and collapse_all doesn't work properly
     def collapse(self) -> None:
         """ Collapses the corresponding tree.
         """
@@ -335,7 +336,7 @@ class TMTree:
             # call a helper
 
     def _collapse_helper(self) -> None:
-        """ Makes all the trees and subtress followed by it as collpsed.
+        """ Makes all the trees and subtress followed by it as collapsed.
         """
         if self.is_empty():
             pass
@@ -471,12 +472,12 @@ class FileSystemTree(TMTree):
 
 
 if __name__ == '__main__':
-    # import python_ta
-    # python_ta.check_all(config={
-    #     'allowed-import-modules': [
-    #         'python_ta', 'typing', 'math', 'random', 'os', '__future__'
-    #     ]
-    # })
+    import python_ta
+    python_ta.check_all(config={
+        'allowed-import-modules': [
+            'python_ta', 'typing', 'math', 'random', 'os', '__future__'
+        ]
+    })
 
     import doctest
     doctest.testmod()
