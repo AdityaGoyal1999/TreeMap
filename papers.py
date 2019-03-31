@@ -154,6 +154,7 @@ class PaperTree(TMTree):
 
         TMTree.__init__(self, name, subtrees)
 
+
 def _load_papers_to_dict(by_year: bool = True) -> Dict:
     """Return a nested dictionary of the data read from the papers dataset file.
 
@@ -200,18 +201,18 @@ def _recursive_dict_update(dic: dict, lst: list, tup: tuple) -> None:
     """
     """
     if len(lst) == 0:
-        pass
+        _recursive_dictionary(lst, tup)
     else:
         if lst[0] in dic:
             # Potential bug
             if isinstance(dic[lst[0]][0], dict):
                 _recursive_dict_update(dic[lst[0]][0], lst[1:], tup)
             else:
-                dic[lst[0]].insert(0, _recursive_dictionary(lst, tup))
+                dic[lst[0]].append(_recursive_dictionary(lst, tup))
         else:
             new_dict = _recursive_dictionary(lst, tup)
             if isinstance(new_dict, tuple):
-                dic[lst[0]].append(new_dict)
+                dic[lst[0]] = [new_dict]
             else:
                 dic[lst[0]] = new_dict[lst[0]]
 
@@ -219,7 +220,6 @@ def _recursive_dict_update(dic: dict, lst: list, tup: tuple) -> None:
 def _recursive_dictionary(lst: list, tup: tuple) -> Union[dict, tuple]:
     """
     """
-    # what am I supposed to add here?
     if len(lst) == 0:
         return tup
     else:
@@ -242,7 +242,7 @@ def check_structure(dic: Union[dict, tuple]) -> int:
         for v in dic:
             for a in dic[v]:
                 if isinstance(a, dict):
-                    count += check_structure(v)
+                    count += check_structure(a)
                 elif isinstance(a, tuple):
                     count += 1
         return count
@@ -283,6 +283,7 @@ if __name__ == '__main__':
     paper_tree = PaperTree('CS1', [], all_papers=True, by_year=False)
     dic = _load_papers_to_dict()
     print(check_structure(dic))
+
 
     import doctest
     doctest.testmod()
