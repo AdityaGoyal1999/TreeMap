@@ -152,8 +152,13 @@ class PaperTree(TMTree):
         self._all_papers = all_papers
         # I am not sure about this
         if all_papers:
-            TMTree.__init__(self, name, subtrees, citations)
+            diction = _load_papers_to_dict()
+            generated_subtrees = _build_tree_from_dict(diction)
+            TMTree.__init__(self, name, generated_subtrees, citations)
         else:
+            # diction = _load_papers_to_dict()
+            # generated_subtrees = _build_tree_from_dict(diction)
+            # generated_subtrees.extend(subtrees)
             TMTree.__init__(self, name, subtrees, citations)
 
 
