@@ -152,11 +152,9 @@ class PaperTree(TMTree):
         self._all_papers = all_papers
         # I am not sure about this
         if all_papers:
-            TMTree.__init__(self, subtrees, citations)
+            TMTree.__init__(self, name, subtrees, citations)
         else:
-            TMTree.__init__()
-
-        TMTree.__init__(self, name, subtrees)
+            TMTree.__init__(self, name, subtrees, citations)
 
 
 def _load_papers_to_dict(by_year: bool = True) -> Dict:
@@ -293,26 +291,36 @@ def check_structure(dic: Union[dict, tuple]) -> int:
         return count
 
 
-def _build_tree_from_dict(nested_dict: Dict) -> List[PaperTree]:
+def _build_tree_from_dict(nested_dict: Dict) -> Union[List[PaperTree], tuple]:
     """Return a list of trees from the nested dictionary <nested_dict>.
     """
     # TODO: Implement this helper, or remove it if you do not plan to use it
-    lst = []
-    # for element in nested_dict:
-    #     for dot in element:
-    #         if isinstance(dot, dict):
-    #             lst += build_tree_from_dict(dot)
+    # lst = []
+    # for elements in nested_dict:
+    #     lst2 = []
+    #     for e in nested_dict[elements]:
+    #         val = nested_dict[elements][e]
+    #         if isinstance(nested_dict[elements][e], tuple):
+    #             lst2.append(PaperTree(val[1], [], val[0], val[4], val[5]))
     #         else:
-    #             # not sure
-    #             lst .append(PaperTree(dot[1], [], dot[0], dot[4], dot[5]))
-    for elements in nested_dict:
-        lst2 = []
-        for e in nested_dict[elements]:
-            if isinstance(nested_dict[elements][e], tuple):
-                val = nested_dict[elements][e]
-                lst2.append(PaperTree(val[1], [], val[0], val[4], val[5]))
-            else:
-                pass
+    #             lst2.extend(_build_tree_from_dict(val))
+    if isinstance(nested_dict, tuple):
+        d = nested_dict
+        return [PaperTree(d[1], [], d[0], d[4], int(d[5]))]
+    else:
+        lst = []
+        for val in nested_dict:
+            if isinstance(nested_dict[val], dict):
+                subtrees = []
+                subtrees.extend(_build_tree_from_dict(nested_dict[val]))
+                p = PaperTree(val, subtrees)
+                lst.append(p)
+            else: #isisntance(nested_dict[val], tuple)
+                b = nested_dict[val]
+                p = PaperTree(b[1], [], b[0], b[4], int(b[5]))
+                lst.append(p)
+        return lst
+
 
 if __name__ == "__main__":
     # import python_ta
@@ -324,7 +332,7 @@ if __name__ == "__main__":
 
     paper_tree = PaperTree('CS1', [], all_papers=True, by_year=False)
     dic = _load_papers_to_dict()
-    print(check_structure(dic))
+    print(_build_tree_from_dict(dic))
 
 
     #
