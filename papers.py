@@ -161,6 +161,18 @@ class PaperTree(TMTree):
             # generated_subtrees.extend(subtrees)
             TMTree.__init__(self, name, subtrees, citations)
 
+    def get_separator(self) -> str:
+        """Return the string used to separate names in the string
+        representation of a path from the tree root to this tree.
+        """
+        return ':'
+
+    def get_suffix(self) -> str:
+        """Return the string used at the end of the string representation of
+        a path from the tree root to this tree.
+        """
+        return ' '
+
 
 def _load_papers_to_dict(by_year: bool = True) -> Dict:
     """Return a nested dictionary of the data read from the papers dataset file.
