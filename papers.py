@@ -151,6 +151,14 @@ class PaperTree(TMTree):
         # this makes the root when it is True
         self._all_papers = all_papers
         # I am not sure about this
+
+
+        # NO No
+        # if len(self._doi) > 0:
+        #     self._cool = True
+        # else:
+        #     self._cool = False
+        #
         if all_papers:
             diction = _load_papers_to_dict()
             generated_subtrees = _build_tree_from_dict(diction)
@@ -220,26 +228,26 @@ def _recursive_dict_update(dic: dict, lst: list, tup: tuple) -> None:
     """ Actual recursive dictionary.
     """
     if len(lst) == 0:
-        if isinstance(dic, tuple):
-            pass
-        else:
-            dic[tup[4]] = tup
+        # if isinstance(dic, tuple):
+        #     pass
+        # else:
+        dic[tup[4]] = tup
     else:
         if lst[0] in dic:
-            if isinstance(dic[lst[0]], tuple):
-                new_dict = _recursive_dictionary(lst[1:], tup)
-                if isinstance(new_dict, tuple):
-                    dic[tup[4]] = new_dict
-                else:
-                    dic[lst[0]].update(new_dict)
-            else:
-                _recursive_dict_update(dic[lst[0]], lst[1:], tup)
+            # if isinstance(dic[lst[0]], tuple):
+            #     new_dict = _recursive_dictionary(lst[1:], tup)
+            #     if isinstance(new_dict, tuple):
+            #         dic[tup[4]] = new_dict
+            #     else:
+            #         dic[lst[0]].update(new_dict)
+            # else:
+            _recursive_dict_update(dic[lst[0]], lst[1:], tup)
         else:
             new_dict = _recursive_dictionary(lst[1:], tup)
-            if isinstance(dic, tuple):
-                pass
-            else:
-                dic[lst[0]] = new_dict
+            # if isinstance(dic, tuple):
+            #     pass
+            # else:
+            dic[lst[0]] = new_dict
 
 # def _recursive_dict_update(dic: dict, lst: list, tup: tuple) -> None:
 #     """
@@ -327,16 +335,40 @@ def _build_tree_from_dict(nested_dict: Dict) -> Union[List[PaperTree], tuple]:
     else:
         lst = []
         for val in nested_dict:
-            if isinstance(nested_dict[val], dict):
-                subtrees = []
+            # if isinstance(nested_dict[val], dict):
+            subtrees = []
+            if isinstance(nested_dict[val], tuple):
+                d = nested_dict[val]
+                p = PaperTree(d[1], [], d[0], d[4], int(d[5]))
+                subtrees.append(p)
+            else:
                 subtrees.extend(_build_tree_from_dict(nested_dict[val]))
-                p = PaperTree(val, subtrees)
-                lst.append(p)
-            else: #isisntance(nested_dict[val], tuple)
-                b = nested_dict[val]
-                p = PaperTree(b[1], [], b[0], b[4], int(b[5]))
-                lst.append(p)
+            # subtrees.extend(_build_tree_from_dict(nested_dict[val]))
+            lst.append(PaperTree(val, subtrees))
+            # lst.append(p)
+            # else: #isisntance(nested_dict[val], tuple)
+            #     b = nested_dict[val]
+            #     p = PaperTree(b[1], [], b[0], b[4], int(b[5]))
+            #     lst.append(p)
+        # make another list on this level
         return lst
+
+
+def check_build_tree(nested_list: list) -> int:
+    """ Returns the number of leaves.
+    """
+    if isinstance(nested_list, PaperTree):
+        count = 0
+        if nested_list._cool == True:
+            count += 1
+        else:
+            count += check_build_tree(nested_list._subtrees)
+        return count
+    else:
+        count = 0
+        for val in nested_list:
+            count += check_build_tree(val)
+        return count
 
 
 if __name__ == "__main__":
@@ -349,7 +381,10 @@ if __name__ == "__main__":
 
     paper_tree = PaperTree('CS1', [], all_papers=True, by_year=False)
     dic = _load_papers_to_dict()
-    print(_build_tree_from_dict(dic))
+    # print(dic)
+    # print(check_structure(dic))
+    lst = _build_tree_from_dict(dic)
+    print(check_build_tree(lst))
 
 
     #
