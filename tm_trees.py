@@ -133,53 +133,58 @@ class TMTree:
         """Update the rectangles in this tree and its descendents using the
         treemap algorithm to fill the area defined by pygame rectangle <rect>.
         """
-        # TODO: (Task 2) Complete the body of this method.
-        # Read the handout carefully to help get started identifying base cases,
-        # then write the outline of a recursive step.
-        #
-        # Programming tip: use "tuple unpacking assignment" to easily extract
-        # elements of a rectangle, as follows.
-        # x, y, width, height = rect
+        # If folder is completely empty
         if self.data_size == 0:
             self.rect = (0, 0, 0, 0)
+        # If self is a file
+        elif self._subtrees == []:
+            self.rect = rect
+        # Call helper method
         else:
-            x, y, width, height = rect
-            self.rect = (x, y, width, height)
+            self._update_rect_helper(rect)
+
+    def _update_rect_helper(self, rect: Tuple[int, int, int, int]) -> None:
+        """
+        This is a helper method used by update_rectangles method.
+        """
+        # Unpack tuple
+        x, y, width, height = rect
+
+        # Set self rectangle to parameter
+        self.rect = rect
+
+        # Initialize necessary variables
+        small_x = x
+        small_y = y
+        big_x = x + width
+        big_y = y + height
+
+        # Iterate through subtrees and recursively call update rectangles.
+        for i in range(len(self._subtrees)):
             if width > height:
-                # Count represents the index in self._subtrees
-                count = 0
-                # w1 is to keep the progress of the x value
-                w1 = x
-                for subtree in self._subtrees:
-                    # If its the last subtree, fill the rest of the space.
-                    if count == len(self._subtrees) - 1:
-                        subtree.rect = (x + w1, y, width - x - w1, height)
-                        subtree.update_rectangles(subtree.rect)
-                        count += 1
-                    else:
-                        percentage = subtree.data_size / self.data_size
-                        x = x + w1
-                        w1 = percentage * width
-                        w1 = math.floor(w1)
-                        subtree.update_rectangles((x, y, w1, height))
-                        count += 1
-            else:   # width <= height
-                count = 0
-                h1 = y
-                for subtree in self._subtrees:
-                    # Enter if block if its in the last subtree
-                    if count == len(self._subtrees) - 1:
-                        subtree.rect = (x, y + h1, width, height - y - h1)
-                        subtree.update_rectangles(subtree.rect)
-                        count += 1
-                    else:
-                        percentage = subtree.data_size / self.data_size
-                        y = y + h1
-                        h1 = percentage * height
-                        h1 = math.floor(h1)
-                        subtree.rect = (x, y, width, h1)
-                        subtree.update_rectangles(subtree.rect)
-                        count += 1
+
+                # "Fill in the rest of the space" for the LAST subtree
+                if i == len(self._subtrees) - 1:
+                    x_percentage = big_x - small_x
+
+                else:
+                    x_percentage = math.floor((self._subtrees[i].data_size /
+                                               self.data_size) * width)
+                subtree_rect = small_x, y, x_percentage, height
+                small_x += x_percentage
+            else:
+                # "Fill in the rest of the space" for the LAST subtree
+                if i == len(self._subtrees) - 1:
+                    y_percentage = big_y - small_y
+
+                else:
+                    y_percentage = math.floor((self._subtrees[i].data_size /
+                                               self.data_size) * height)
+                subtree_rect = x, small_y, width, y_percentage
+                small_y += y_percentage
+
+            # Call update rectangles on the new rectangle.
+            self._subtrees[i].update_rectangles(subtree_rect)
 
     def get_rectangles(self) -> List[Tuple[Tuple[int, int, int, int],
                                            Tuple[int, int, int]]]:
@@ -233,26 +238,6 @@ class TMTree:
                 if val is not None:
                     return val
             return None
-
-    def _get_tmtree_in_range(self, pos: Tuple[int, int]) -> Optional[TMTree]:
-        """ Recursively returns the leaf which is in the range.
-        """
-        # if self.is_empty():
-        #     return None
-        # elif len(self._subtrees) == 0 or self._expanded is False:
-        #     x, y, width, height = self.rect
-        #     if x <= pos[0] <= x + width and y <= pos[1] <= y + height:
-        #         return self
-        #     else:
-        #         return None
-        # else:
-        #     for subtree in self._subtrees:
-        #         val = subtree._get_tmtree_in_range(pos)
-        #         if val is not None:
-        #             return val
-        #     return None
-
-        # Delete this function later because it is not being used anymore.
 
     def update_data_sizes(self) -> int:
         """Update the data_size for this tree and its subtrees, based on the
