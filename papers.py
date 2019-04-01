@@ -179,7 +179,10 @@ class PaperTree(TMTree):
         """Return the string used at the end of the string representation of
         a path from the tree root to this tree.
         """
-        return ' '
+        if len(self._subtrees) == 0:
+            return ' (Category)'
+        else:
+            return ' (Research Paper)'
 
 
 def _load_papers_to_dict(by_year: bool = True) -> Dict:
