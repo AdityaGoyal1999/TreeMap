@@ -88,18 +88,7 @@ class TMTree:
         self._subtrees = subtrees[:]
         self._parent_tree = None
 
-        # You will change this in Task 5
-        # if len(self._subtrees) > 0:
-        #     self._expanded = True
-        # else:
-        #     self._expanded = False
         self._expanded = False
-
-        # TODO: (Task 1) Complete this initializer by doing two things:
-        # 1. Initialize self._colour and self.data_size, according to the
-        # docstring.
-        # 2. Set this tree as the parent for each of its subtrees.
-
         for subtree in self._subtrees:
             subtree._parent_tree = self
 
@@ -114,7 +103,6 @@ class TMTree:
         """
         if self.is_empty():
             return 0
-        # there is some difference in elif condition
         elif len(self._subtrees) == 0:
             return self.data_size
         else:
@@ -137,7 +125,7 @@ class TMTree:
         if self.data_size == 0:
             self.rect = (0, 0, 0, 0)
         # If self is a file
-        elif self._subtrees == []:
+        elif len(self._subtrees) == 0:
             self.rect = rect
         # Call helper method
         else:
@@ -193,7 +181,7 @@ class TMTree:
         appropriate pygame rectangle to display for a leaf, and the colour
         to fill it with.
         """
-        # TODO: (Task 2) Complete the body of this method.
+        # WE IMPLEMENTED IT
 
         if self.is_empty() or self.data_size == 0:
             return []
@@ -214,16 +202,7 @@ class TMTree:
         tree represented on the left for a vertical boundary, or the rectangle
         above for a horizontal boundary.
         """
-        # TODO: (Task 3) Complete the body of this method
-        # a, b = pos
-        # x, y, width, height = self.rect
-        # if x <= a <= x + width and y <= b <= y + height:
-        #     return self._get_tmtree_in_range(pos)
-        # else:
-        #     return None
-        # I combined this function with the helper function because it wasn't.
-        # necessary. MAKE SURE TO TEST FOR TIES. WE ARE NOT DOING ANYTHING
-        # SPECIAL TO BREAK TIES AT THE MOMENT.
+        # WE IMPLEMENTED IT
         if self.is_empty():
             return None
         elif len(self._subtrees) == 0 or self._expanded is False:
@@ -244,7 +223,7 @@ class TMTree:
         size of their leaves, and return the new size.
         If this tree is a leaf, return its size unchanged.
         """
-        # TODO: (Task 4) Complete the body of this method.
+        # WE IMPLEMENTED IT
         if self.is_empty():
             return 0
         elif self._subtrees == []:
@@ -260,7 +239,7 @@ class TMTree:
         """If this tree is a leaf, and <destination> is not a leaf, move this
         tree to be the last subtree of <destination>. Otherwise, do nothing.
         """
-        # TODO: (Task 4) Complete the body of this method.
+        # WE IMPLEMENTED IT
         # If this tree is a leaf, and destination is not a leaf
         if len(self._subtrees) == 0 and len(destination._subtrees) > 0:
             self._parent_tree._subtrees.remove(self)
@@ -274,7 +253,7 @@ class TMTree:
         some change is made.
         Do nothing if this tree is not a leaf.
         """
-        # TODO: (Task 4) Complete the body of this method
+        # WE IMPLEMENTED IT
         if len(self._subtrees) == 0:
             if factor > 0:
                 val = factor * self.data_size
@@ -341,11 +320,7 @@ class TMTree:
         else:
             self._parent_tree.collapse_all()
 
-
-    # TODO: (Task 5) Write the methods expand, expand_all, collapse, and
-    # TODO: collapse_all, and add the displayed-tree functionality to the
-    # TODO: methods from Tasks 2 and 3
-
+    # WE IMPLEMENTED IT
     # Methods for the string representation
     def get_path_string(self, final_node: bool = True) -> str:
         """Return a string representing the path containing this tree
@@ -398,12 +373,7 @@ class FileSystemTree(TMTree):
         """Store the file tree structure contained in the given file or folder.
         Precondition: <path> is a valid path for this computer.
         """
-        # Remember that you should recursively go through the file system
-        # and create new FileSystemTree objects for each file and folder
-        # encountered.
-        #
-        # Also remember to make good use of the superclass constructor!
-        # TODO: (Task 1) Implement the initializer
+        # WE IMPLEMENTED IT
         n = os.path.basename(path)
         ds = os.path.getsize(path)
         if not os.path.isdir(path):

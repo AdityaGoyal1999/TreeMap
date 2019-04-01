@@ -21,7 +21,7 @@ hierarchical. This means we are able to model it using a TMTree subclass,
 and we can then run it through our treemap visualisation tool to get a nice
 interactive graphical representation of this data.
 
-TODO: (Task 6) Complete the steps below
+# WE COMPLETED THE STEPS BELOW
 Recommended steps:
 1. Start by reviewing the provided dataset in cs1_papers.csv. You can assume
    that any data used to generate this tree has this format,
@@ -70,17 +70,18 @@ class PaperTree(TMTree):
     """A tree representation of Computer Science Education research paper data.
 
     === Private Attributes ===
-    TODO: Add any of your new private attributes here.
+    # WE IMPLEMENTED IT
     These should store information about this paper's <authors> and <doi>.
 
     _authors: a str for the authors of the paper
 
-    _doi: A Digital Object Identifier for the paper
+    _doi: A Digital Object Identifier for the paper/ the url of the paper
 
     _citations: the number of citations of a paper
         * citations is for acknowledging the paper *
 
-    _by_year: the year
+    _by_year: puts year in the base of the name if _by_year is True and if False
+        then doesn't care
 
     === Inherited Attributes ===
     rect:
@@ -118,7 +119,7 @@ class PaperTree(TMTree):
     - if _subtrees is empty, then _expanded is False
     """
 
-    # TODO: Add the type contracts for your new attributes here
+    # WE IMPLEMENTED IT
 
     _authors: str
     _doi: str
@@ -142,8 +143,7 @@ class PaperTree(TMTree):
         the years, followed by each category, subcategory, and so on. If
         <by_year> is False, then the year in the dataset is simply ignored.
         """
-        # TODO: Complete this initializer. Your implementation must not
-        # TODO: duplicate anything done in the superclass initializer.
+        # WE IMPLEMENTED IT
         self._authors = authors
         self._doi = doi
         self._citations = citations
@@ -178,7 +178,7 @@ def _load_papers_to_dict(by_year: bool = True) -> Dict:
     If <by_year>, then use years as the roots of the subtrees of the root of
     the whole tree. Otherwise, ignore years and use categories only.
     """
-    # TODO: Implement this helper, or remove it if you do not plan to use it
+    # WE IMPLEMENTED IT
     dic = {}
     lst = []
     if not by_year:
@@ -203,7 +203,6 @@ def _load_papers_to_dict(by_year: bool = True) -> Dict:
                 lst.append(rows)
             lst = lst[1:]
             for line in lst:
-                # year = int(line[2])
                 year = line[2]
                 if year in dic1:
                     dic1[year].append(line)
@@ -251,7 +250,7 @@ def _recursive_dictionary(lst: list, tup: tuple) -> Union[dict, tuple]:
 def _build_tree_from_dict(nested_dict: Dict) -> Union[List[PaperTree], tuple]:
     """Return a list of trees from the nested dictionary <nested_dict>.
     """
-    # TODO: Implement this helper, or remove it if you do not plan to use it
+    # WE IMPLEMENTED IT
     if isinstance(nested_dict, tuple):
         d = nested_dict
         return [PaperTree(d[1], [], d[0], d[4], int(d[5]))]
@@ -263,7 +262,6 @@ def _build_tree_from_dict(nested_dict: Dict) -> Union[List[PaperTree], tuple]:
                 d = nested_dict[val]
                 p = PaperTree(d[1], [], d[0], d[4], int(d[5]))
                 lst.append(p)
-                # lst.append()
             else:
                 subtrees.extend(_build_tree_from_dict(nested_dict[val]))
                 lst.append(PaperTree(val, subtrees))
