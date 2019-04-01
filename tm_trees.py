@@ -409,14 +409,6 @@ class FileSystemTree(TMTree):
                 a._parent_tree = self
         TMTree.__init__(self, n, subdirectories, ds)
 
-    def _how_many_trees(self) -> None:
-        if self.is_empty():
-            pass
-        else:
-            print(self._name)
-            for subtree in self._subtrees:
-                subtree._how_many_trees()
-
     def get_separator(self) -> str:
         """Return the file separator for this OS.
         """
@@ -430,31 +422,6 @@ class FileSystemTree(TMTree):
         else:
             return ' (folder)'
 
-    def print_co(self, depth: int = 0) -> None:
-        """ Prints co-ordinates of all rectangles
-        """
-        if self.is_empty():
-            pass
-        else:
-            print(depth*"  ", self.rect)
-            for subtree in self._subtrees:
-                subtree.print_co(depth+1)
-
-    def _number_of_trees(self) -> None:
-        """ Tells the size of the tree.
-        """
-        if self.is_empty():
-            return 0
-        else:
-            count = 1
-            if self._parent_tree is not None:
-                print('Name: ', self._name, ' Parent: ', self._parent_tree._name)
-                print('Data size: ', self.data_size)
-            for subtree in self._subtrees:
-                subtree._number_of_trees()
-
-
-
 
 if __name__ == '__main__':
     import python_ta
@@ -463,15 +430,3 @@ if __name__ == '__main__':
             'python_ta', 'typing', 'math', 'random', 'os', '__future__'
         ]
     })
-
-    import doctest
-    doctest.testmod()
-    f = FileSystemTree('/Users/16475/Desktop/csc148/assignments/a2/example-directory')
-    # FileSystemTree(f)
-    print(f._number_of_trees())
-    # f.update_rectangles((0, 0, 200, 100))
-    # f.get_rectangles()
-    #print(f.get_rectangles())
-    # f._how_many_trees()
-    # print(f.get_path_string())
-    #print(f.get_tree_at_position((90, 100))._name)
