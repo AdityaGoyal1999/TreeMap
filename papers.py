@@ -194,7 +194,8 @@ def _load_papers_to_dict(by_year: bool = True) -> Dict:
     # TODO: Implement this helper, or remove it if you do not plan to use it
     dic = {}
     lst = []
-    if by_year:
+    # this is by_year false and not True
+    if not by_year:
         with open(DATA_FILE, 'r') as csvfile:
             my_file = csv.reader(csvfile)
             for rows in my_file:
@@ -207,6 +208,7 @@ def _load_papers_to_dict(by_year: bool = True) -> Dict:
                 tup = (l[0], l[1], l[2], l[3], l[4], l[5])
                 # dic1 = _recursive_dictionary(categories, tup)
                 _recursive_dict_update(dic, categories, tup)
+        return dic
 
     else:
         with open(DATA_FILE, 'r') as csvfile:
@@ -223,8 +225,29 @@ def _load_papers_to_dict(by_year: bool = True) -> Dict:
             #         dic = _recursive_dictionary(categories)
             #     else:
             #         _recursive_dict_update(dic
-            pass
-    return dic
+            dic1 = {}
+            my_file = csv.reader(csvfile)
+            for rows in my_file:
+                lst.append(rows)
+            lst = lst[1:]
+            for line in lst:
+                # year = int(line[2])
+                year = line[2]
+                if year in dic1:
+                    dic1[year].append(line)
+                else:
+                    dic1[year] = [line]
+            for ls in dic1:
+                dic2 = {}
+                for l in dic1[ls]:
+                    categories = l[3].split(':')
+                    for i in range(len(categories)):
+                        categories[i] = categories[i].strip()
+                    tup = (l[0], l[1], l[2], l[3], l[4], l[5])
+                    _recursive_dict_update(dic2, categories, tup)
+                dic1[ls] = dic2
+        return dic1
+    # return dic
 
 
 def _recursive_dict_update(dic: dict, lst: list, tup: tuple) -> None:
