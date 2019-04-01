@@ -1,15 +1,12 @@
 """Assignment 2: Treemap Visualiser
-
 === CSC148 Winter 2019 ===
 This code is provided solely for the personal and private use of
 students taking the CSC148 course at the University of Toronto.
 Copying for purposes other than this use is expressly prohibited.
 All forms of distribution of this code, whether as given or with
 any changes, are expressly prohibited.
-
 All of the files in this directory and all subdirectories are:
 Copyright (c) 2019 Bogdan Simion, David Liu, Diane Horton, Jacqueline Smith
-
 === Module Description ===
 This module contains the main program code for the treemap visualisation.
 It is responsible for initializing an instance of TMTree (using a
@@ -20,7 +17,7 @@ to them.
 from typing import Optional, Tuple
 import pygame
 from tm_trees import TMTree, FileSystemTree
-# from papers import PaperTree
+from papers import PaperTree
 
 
 # Screen dimensions and coordinates
@@ -55,7 +52,6 @@ def render_display(screen: pygame.Surface, tree: Optional[TMTree],
                    selected_node: Optional[TMTree],
                    hover_node: Optional[TMTree]) -> None:
     """Render a treemap and text display to the given screen.
-
     Use the constants TREEMAP_HEIGHT and FONT_HEIGHT to divide the
     screen vertically into the treemap and text comments.
     """
@@ -97,7 +93,6 @@ def _render_text(screen: pygame.Surface, text: str) -> None:
 
 def event_loop(screen: pygame.Surface, tree: TMTree) -> None:
     """Respond to events (mouse clicks, key presses) and update the display.
-
     Note that the event loop is an *infinite loop*: it continually waits for
     the next event, determines the event's type, and then updates the state
     of the visualisation or the tree itself, updating the display if necessary.
@@ -120,45 +115,42 @@ def event_loop(screen: pygame.Surface, tree: TMTree) -> None:
 
         elif event.type == pygame.KEYUP and selected_node is not None:
             if event.key == pygame.K_UP:
-                pass
                 # TODO: Uncomment once you have completed Task 4
-                # selected_node.change_size(0.01)
-                # tree.update_data_sizes()
-                # tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
+                selected_node.change_size(0.01)
+                tree.update_data_sizes()
+                tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
 
             elif event.key == pygame.K_DOWN:
-                pass
                 # TODO: Uncomment once you have completed Task 4
-                # selected_node.change_size(-0.01)
-                # tree.update_data_sizes()
-                # tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
+                selected_node.change_size(-0.01)
+                tree.update_data_sizes()
+                tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
 
             elif event.key == pygame.K_m:
-                pass
                 # TODO: Uncomment once you have completed Task 4
-                # selected_node.move(hover_node)
-                # tree.update_data_sizes()
-                # tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
+                selected_node.move(hover_node)
+                tree.update_data_sizes()
+                tree.update_rectangles((0, 0, WIDTH, HEIGHT - FONT_HEIGHT))
 
             elif event.key == pygame.K_e:
-                pass
+                # pass
                 # TODO: Uncomment once you have completed Task 5
-                # selected_node.expand()
+                selected_node.expand()
 
             elif event.key == pygame.K_a:
-                pass
+                # pass
                 # TODO: Uncomment once you have completed Task 5
-                # selected_node.expand_all()
+                selected_node.expand_all()
 
             elif event.key == pygame.K_c:
-                pass
+                # pass
                 # TODO: Uncomment once you have completed Task 5
-                # selected_node.collapse()
+                selected_node.collapse()
 
             elif event.key == pygame.K_x:
-                pass
+                # pass
                 # TODO: Uncomment once you have completed Task 5
-                # selected_node.collapse_all()
+                selected_node.collapse_all()
 
         # Update display
         render_display(screen, tree, selected_node, hover_node)
@@ -167,7 +159,6 @@ def event_loop(screen: pygame.Surface, tree: TMTree) -> None:
 def _handle_click(button: int, pos: Tuple[int, int], tree: TMTree,
                   old_selected_leaf: Optional[TMTree]) -> Optional[TMTree]:
     """Return the new selection after handling the mouse event.
-
     We need to use old_selected_leaf to handle the case when the selected
     leaf is left-clicked again.
     """
@@ -199,7 +190,6 @@ def _get_display_text(leaf: Optional[TMTree]) -> str:
 
 def run_treemap_file_system(path: str) -> None:
     """Run a treemap visualisation for the given path's file structure.
-
     Precondition: <path> is a valid path to a file or folder.
     """
     file_tree = FileSystemTree(path)
@@ -208,11 +198,14 @@ def run_treemap_file_system(path: str) -> None:
 
 def run_treemap_papers() -> None:
     """Run a treemap visualization for CS Education research papers data.
-
     You can try changing the value of the named argument by_year, but the
     others should stay the same.
     """
-    paper_tree = PaperTree('CS1', [], all_papers=True, by_year=False)
+
+    #
+    # Make sure that you change this to check it
+    #
+    paper_tree = PaperTree('CS1', [], all_papers=True, by_year=True)
     run_visualisation(paper_tree)
 
 
@@ -229,7 +222,7 @@ if __name__ == '__main__':
     # call, with the '' replaced by a path like
     # 'C:\\Users\\David\\Documents\\csc148\\assignments' (Windows) or
     # '/Users/dianeh/Documents/courses/csc148/assignments' (OSX)
-    run_treemap_file_system('/Users/adityagoyal/Documents/csc148/assignments/a2/example-directory')
+    # run_treemap_file_system('/Users/adityagoyal/Documents/csc148/assignments/a2/example-directory')
 
     # To check your work for Task 6, try uncommenting the following
-    # run_treemap_papers()
+    run_treemap_papers()

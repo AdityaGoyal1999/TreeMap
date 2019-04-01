@@ -386,6 +386,13 @@ class FileSystemTree(TMTree):
     The data_size attribute for regular files is simply the size of the file,
     as reported by os.path.getsize.
     """
+    rect: Tuple[int, int, int, int]
+    data_size: int
+    _colour: Tuple[int, int, int]
+    _name: str
+    _subtrees: List[TMTree]
+    _parent_tree: Optional[TMTree]
+    _expanded: bool
 
     def __init__(self, path: str) -> None:
         """Store the file tree structure contained in the given file or folder.
