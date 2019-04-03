@@ -18,8 +18,6 @@ import os
 import math
 from random import randint
 from typing import List, Tuple, Optional
-# remove this later on
-# from print_dirs import print_items
 
 
 class TMTree:
@@ -382,8 +380,11 @@ class FileSystemTree(TMTree):
             subdirectories = []
             for subdirectory in os.listdir(path):
                 a = FileSystemTree(os.path.join(path, subdirectory))
-                subdirectories.append(a)
-                a._parent_tree = self
+                if a._name == ".DS_Store":
+                    pass
+                else:
+                    subdirectories.append(a)
+                    a._parent_tree = self
         TMTree.__init__(self, n, subdirectories, ds)
 
     def get_separator(self) -> str:

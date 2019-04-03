@@ -23,8 +23,8 @@ from papers import PaperTree
 # Screen dimensions and coordinates
 ORIGIN = (0, 0)
 # You may adjust these values as you'd like, depending on your screen resolution
-WIDTH = 800  # 1024
-HEIGHT = 600  # 768
+WIDTH = 1024  # 800
+HEIGHT = 768  # 600
 FONT_HEIGHT = 30                       # The height of the text display.
 TREEMAP_HEIGHT = HEIGHT - FONT_HEIGHT  # The height of the treemap display.
 
@@ -205,7 +205,7 @@ def run_treemap_papers() -> None:
     #
     # Make sure that you change this to check it
     #
-    paper_tree = PaperTree('CS1', [], all_papers=True, by_year=True)
+    paper_tree = PaperTree('CS1', [], all_papers=True, by_year=False)
     run_visualisation(paper_tree)
 
 

@@ -1,21 +1,26 @@
 """Assignment 2: Modelling CS Education research paper data
+
 === CSC148 Winter 2019 ===
 This code is provided solely for the personal and private use of
 students taking the CSC148 course at the University of Toronto.
 Copying for purposes other than this use is expressly prohibited.
 All forms of distribution of this code, whether as given or with
 any changes, are expressly prohibited.
+
 All of the files in this directory and all subdirectories are:
 Copyright (c) 2019 Bogdan Simion, David Liu, Diane Horton, Jacqueline Smith
+
 === Module Description ===
 This module contains a new class, PaperTree, which is used to model data on
 publications in a particular area of Computer Science Education research.
 This data is adapted from a dataset presented at SIGCSE 2019.
 You can find the full dataset here: https://www.brettbecker.com/sigcse2019/
+
 Although this data is very different from filesystem data, it is still
 hierarchical. This means we are able to model it using a TMTree subclass,
 and we can then run it through our treemap visualisation tool to get a nice
 interactive graphical representation of this data.
+
 # WE COMPLETED THE STEPS BELOW
 Recommended steps:
 1. Start by reviewing the provided dataset in cs1_papers.csv. You can assume
@@ -25,6 +30,7 @@ Recommended steps:
    However, you should not make assumptions about what the categories are, how
    many categories there are, the maximum number of categories a paper can have,
    or the number of lines in the file.
+
 2. Read through all the docstrings in this file once. There is a lot to take in,
    so don't feel like you need to understand it all the first time.
    Draw some pictures!
@@ -35,16 +41,19 @@ Recommended steps:
    For this task, we will be testing that you are building the correct tree,
    not that you are doing it in a particular way. We will access your class
    in the same way as in the client code in the visualizer.
+
 3. Plan out what you'll need to do to implement the PaperTree initializer.
    In particular, think about how to use the boolean parameters to do different
    things in setting up the tree. You may also find it helpful to review the
    Python documentation about the csv module, which you are permitted and
    encouraged to use. You should have a good plan, including what your subtasks
    are, before you begin writing any code.
+
 4. Write the code for the PaperTree initializer and any helper functions you
    want to use in your design. You should not make any changes to the public
    interface of this module, or of the PaperTree class, but you can add private
    attributes and helpers as needed.
+
 5. Tidy and test your code, and try it with the visualizer client code. Make
    sure you have documented any new private attributes, and that PyTA passes
    on your code.
@@ -59,15 +68,21 @@ DATA_FILE = 'cs1_papers.csv'
 
 class PaperTree(TMTree):
     """A tree representation of Computer Science Education research paper data.
+
     === Private Attributes ===
     # WE IMPLEMENTED IT
     These should store information about this paper's <authors> and <doi>.
+
     _authors: a str for the authors of the paper
+
     _doi: A Digital Object Identifier for the paper/ the url of the paper
+
     _citations: the number of citations of a paper
         * citations is for acknowledging the paper *
+
     _by_year: puts year in the base of the name if _by_year is True and if False
         then doesn't care
+
     === Inherited Attributes ===
     rect:
         The pygame rectangle representing this node in the treemap
@@ -85,21 +100,9 @@ class PaperTree(TMTree):
         as a subtree, or None if this tree is not part of a larger tree.
     _expanded:
         Whether or not this tree is considered expanded for visualization.
+
     === Representation Invariants ===
     - All TMTree RIs are inherited.
-    ### Remove this later on
-    - data_size >= 0
-    - If _subtrees is not empty, then data_size is equal to the sum of the
-      data_size of each subtree.
-    - _colour's elements are each in the range 0-255.
-    - If _name is None, then _subtrees is empty, _parent_tree is None, and
-      data_size is 0.
-      This setting of attributes represents an empty tree.
-    - if _parent_tree is not None, then self is in _parent_tree._subtrees
-    - if _expanded is True, then _parent_tree._expanded is True
-    - if _expanded is False, then _expanded is False for every tree
-      in _subtrees
-    - if _subtrees is empty, then _expanded is False
     """
 
     # WE IMPLEMENTED IT
@@ -115,10 +118,13 @@ class PaperTree(TMTree):
                  all_papers: bool = False) -> None:
         """Initialize a new PaperTree with the given <name> and <subtrees>,
         <authors> and <doi>, and with <citations> as the size of the data.
+
         If <all_papers> is True, then this tree is to be the root of the paper
         tree. In that case, load data about papers from DATA_FILE to build the
         tree.
+
         If <all_papers> is False, Do NOT load new data.
+
         <by_year> indicates whether or not the first level of subtrees should be
         the years, followed by each category, subcategory, and so on. If
         <by_year> is False, then the year in the dataset is simply ignored.
@@ -154,6 +160,7 @@ class PaperTree(TMTree):
 
 def _load_papers_to_dict(by_year: bool = True) -> Dict:
     """Return a nested dictionary of the data read from the papers dataset file.
+
     If <by_year>, then use years as the roots of the subtrees of the root of
     the whole tree. Otherwise, ignore years and use categories only.
     """
